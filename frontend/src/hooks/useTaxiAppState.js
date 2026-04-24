@@ -11,6 +11,10 @@ import { socket } from '../socket';
 export function useTaxiAppState() {
   const { t, locale } = useLocale();
   const initial = loadPersistedState();
+  
+  // Telegram WebApp state
+  const [telegramUser, setTelegramUser] = useState(null);
+  const [isTelegram, setIsTelegram] = useState(false);
 
   const [status, setStatus] = useState('connecting');
   const [role, setRole] = useState(initial?.role ?? null);
@@ -18,7 +22,7 @@ export function useTaxiAppState() {
     initial?.location?.length === 2 ? initial.location : [41.2995, 69.2401],
   );
   const [hasLocation, setHasLocation] = useState(!!initial?.hasLocation);
-  /** `true` — ruxsat yo‘q (matn PermissionScreen da `t('gps.denied')` orqali) */
+  /** `true` — ruxsat yo'q (matn PermissionScreen da `t('gps.denied')` orqali) */
   const [gpsError, setGpsError] = useState(false);
   const [otherUsers, setOtherUsers] = useState({});
   const [isDriverRegistered, setIsDriverRegistered] = useState(!!initial?.isDriverRegistered);
@@ -55,7 +59,47 @@ export function useTaxiAppState() {
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (tg) {
+      setIsTelegram(true);
       tg.expand();
+      
+      // Telegram user ma'lumotlarini olish
+      const user = tg.initDataUnsafe?.user;
+      if (user) {
+        setTelegramUser(user);
+        // Agar haydovchi ro'yxatdan o'tmagan bo'lsa, Telegram ismi bilan avto-to'ldirish
+        if (!initial?.isDriverRegistered) {
+          const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+          setDriverData(prev => ({
+            ...prev,
+            fullName: fullName || prev.fullName,
+            phone: user.username ? `@${user.username}` : prev.phone,
+          }));
+        }
+      }
+      
+      // Telegram mavzusiga moslashish
+      document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
+      document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
+      document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#3390ec');
+      document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+      
+      // Back button sozlamalari
+      tg.BackButton.onClick(() => {
+        if (profileOpen) {
+          setProfileOpen(false);
+        } else if (clientOrderOpen) {
+          setClientOrderOpen(false);
+        } else if (postRegNoticeOpen) {
+          setPostRegNoticeOpen(false);
+        }
+      });
+      
+      // Back button ko'rinishini boshqarish
+      if (profileOpen || clientOrderOpen || postRegNoticeOpen) {
+        tg.BackButton.show();
+      } else {
+        tg.BackButton.hide();
+      }
     }
 
     socket.on('connect', () => {
@@ -85,8 +129,23 @@ export function useTaxiAppState() {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('user_moved');
+      if (tg) {
+        tg.BackButton.offClick();
+      }
     };
   }, []);
+
+  // Back button holatini yangilash
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      if (profileOpen || clientOrderOpen || postRegNoticeOpen) {
+        tg.BackButton.show();
+      } else {
+        tg.BackButton.hide();
+      }
+    }
+  }, [profileOpen, clientOrderOpen, postRegNoticeOpen]);
 
   const startWatchPosition = useCallback(() => {
     if (!navigator.geolocation) return;
@@ -287,9 +346,9 @@ export function useTaxiAppState() {
       const msg =
         err?.message ||
         (err?.name === 'TypeError' && String(err?.message || '').includes('fetch')
-          ? 'Serverga ulanib bo‘lmadi. Backend ishlayotganini va telefonda API manzilini tekshiring (bir Wi‑Fi, firewall).'
+          ? 'Serverga ulanib bo'lmadi. Backend ishlayotganini va telefonda API manzilini tekshiring (bir Wi‑Fi, firewall).'
           : null) ||
-        'Ro‘yxatdan o‘tishda xatolik';
+        'Ro'yxatdan o'tishda xatolik';
       alert(msg);
     }
   }, [driverData]);
@@ -323,7 +382,7 @@ export function useTaxiAppState() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/drivers/${driverDbId}`, { method: 'DELETE' });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || 'O‘chirish muvaffaqiyatsiz');
+      if (!res.ok) throw new Error(data.message || 'O'chirish muvaffaqiyatsiz');
       handleLogout();
     } catch (err) {
       alert(err.message || 'Xatolik');
@@ -420,5 +479,7 @@ export function useTaxiAppState() {
     showMainChrome,
     setPostRegNoticeOpen,
     toggleDriverAccepting,
+    telegramUser,
+    isTelegram,
   };
 }
