@@ -1,0 +1,46 @@
+.status-badge {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+  color: #0f172a;
+}
+
+.status-badge__icon {
+  flex-shrink: 0;
+}
+
+.status-badge__icon--online {
+  color: #16a34a;
+}
+
+.status-badge__icon--offline {
+  color: #dc2626;
+}
+
+.status-badge__icon--spin {
+  color: #64748b;
+  animation: status-badge-spin 0.7s linear infinite;
+}
+
+@keyframes status-badge-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

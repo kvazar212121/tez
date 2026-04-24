@@ -1,0 +1,27 @@
+.language-toggle {
+  position: absolute;
+  top: 20px;
+  left: max(12px, env(safe-area-inset-left));
+  z-index: 5200;
+  min-width: 40px;
+  height: 36px;
+  padding: 0 10px;
+  margin: 0;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #0f172a;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+
+.language-toggle:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}

@@ -1,0 +1,28 @@
+# Ma’lumotlar bazasi faqat Dockerda.
+# Ishga tushirish (loyiha ildizidan):  docker compose up -d postgres
+# Keyin hostda backend: backend/.env → DATABASE_URL=...@127.0.0.1:5433/...
+# Konteyner ichidan ulanish: host postgres, port 5432 (masalan kelajakda backend ham Dockerda bo‘lsa).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: taxi-free-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taxi
+      POSTGRES_PASSWORD: taxi
+      POSTGRES_DB: taxi_free
+    # Hostda 5432 band bo‘lsa (mahalliy Postgres): tashqi port 5433
+    ports:
+      - "5433:5432"
+    volumes:
+      - taxi_free_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taxi -d taxi_free"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  taxi_free_pgdata:

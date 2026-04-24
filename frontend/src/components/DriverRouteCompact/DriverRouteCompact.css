@@ -1,0 +1,151 @@
+.driver-route-compact {
+  width: 100%;
+  padding: 4px 0 2px;
+  border-top: 1px solid #e8e8e8;
+  margin-top: 2px;
+}
+
+.driver-route-compact__boarding {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.driver-route-compact__boarding-label {
+  flex: 0 1 42%;
+  min-width: 0;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  text-align: left;
+  line-height: 1.25;
+}
+
+.driver-route-compact__select {
+  flex: 1 1 58%;
+  min-width: 0;
+  width: auto;
+  padding: 8px 10px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  box-sizing: border-box;
+}
+
+.driver-route-compact__select:focus {
+  outline: none;
+  border-color: #f59e0b;
+}
+
+.driver-route-compact__actions-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.driver-route-compact__open-modal {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 8px;
+  border: 2px solid #fbbf24;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #fffbeb 0%, #fff 100%);
+  font-size: 12px;
+  font-weight: 800;
+  color: #0f172a;
+  cursor: pointer;
+  text-align: center;
+  box-sizing: border-box;
+  line-height: 1.25;
+}
+
+.driver-route-compact__open-modal:active {
+  opacity: 0.92;
+  background: #fffbeb;
+}
+
+.driver-route-compact__activity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 0 2px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.driver-route-compact__activity-text {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+  line-height: 1;
+}
+
+.driver-route-compact__switch-wrap {
+  position: relative;
+  width: 48px;
+  height: 28px;
+}
+
+.driver-route-compact__switch-input {
+  position: absolute;
+  inset: 0;
+  width: 48px;
+  height: 28px;
+  margin: 0;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.driver-route-compact__switch-ui {
+  position: absolute;
+  inset: 0;
+  background: #cbd5e1;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+  pointer-events: none;
+}
+
+.driver-route-compact__switch-ui::after {
+  content: '';
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+}
+
+.driver-route-compact__switch-input:checked + .driver-route-compact__switch-ui {
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.driver-route-compact__switch-input:checked + .driver-route-compact__switch-ui::after {
+  transform: translateX(20px);
+}
+
+.driver-route-compact__switch-input:focus-visible + .driver-route-compact__switch-ui {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}

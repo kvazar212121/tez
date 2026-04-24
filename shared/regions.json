@@ -1,0 +1,244 @@
+[
+  {
+    "name": "Qoraqalpog‘iston Respublikasi",
+    "center": "Nukus shahri",
+    "districts": [
+      "Amudaryo",
+      "Beruniy",
+      "Kegeyli",
+      "Qonliko‘l",
+      "Qorao‘zak",
+      "Qo‘ng‘irot",
+      "Mo‘ynoq",
+      "Nukus",
+      "Shumanay",
+      "Taxtako‘pir",
+      "To‘rtko‘l",
+      "Xo‘jayli",
+      "Chimboy",
+      "Ellikqala",
+      "Bo‘zatov"
+    ]
+  },
+  {
+    "name": "Andijon viloyati",
+    "center": "Andijon shahri",
+    "districts": [
+      "Andijon",
+      "Asaka",
+      "Baliqchi",
+      "Bo‘z",
+      "Buloqboshi",
+      "Izboskan",
+      "Jalaquduq",
+      "Marhamat",
+      "Oltinko‘l",
+      "Paxtaobod",
+      "Shahrixon",
+      "Ulug‘nor",
+      "Xo‘jaobod",
+      "Qorg‘ontepa"
+    ]
+  },
+  {
+    "name": "Buxoro viloyati",
+    "center": "Buxoro shahri",
+    "districts": [
+      "Buxoro",
+      "G‘ijduvon",
+      "Jondor",
+      "Kogon",
+      "Olot",
+      "Peshku",
+      "Qorako‘l",
+      "Qorovulbozor",
+      "Romitan",
+      "Shofirkon",
+      "Vobkent"
+    ]
+  },
+  {
+    "name": "Farg‘ona viloyati",
+    "center": "Farg‘ona shahri",
+    "districts": [
+      "Beshariq",
+      "Bog‘dod",
+      "Dang‘ara",
+      "Farg‘ona",
+      "Furqat",
+      "Oltiariq",
+      "O‘zbekiston",
+      "Oxunboboyev",
+      "Quva",
+      "Rishton",
+      "So‘x",
+      "Toshloq",
+      "Uchko‘prik",
+      "Yozyovon",
+      "Buvayda"
+    ]
+  },
+  {
+    "name": "Jizzax viloyati",
+    "center": "Jizzax shahri",
+    "districts": [
+      "Arnasoy",
+      "Baxmal",
+      "Do‘stlik",
+      "Forish",
+      "G‘allaorol",
+      "Jizzax",
+      "Sharof Rashidov",
+      "Mirzacho‘l",
+      "Paxtakor",
+      "Yangiobod",
+      "Zafarobod",
+      "Zomin",
+      "Zarbdor"
+    ]
+  },
+  {
+    "name": "Xorazm viloyati",
+    "center": "Urganch shahri",
+    "districts": [
+      "Bog‘ot",
+      "Gurlan",
+      "Hazorasp",
+      "Qo‘shko‘pir",
+      "Shovot",
+      "Tuproqqala",
+      "Urganch",
+      "Xiva",
+      "Xonqa",
+      "Yangiariq",
+      "Yangibozor"
+    ]
+  },
+  {
+    "name": "Namangan viloyati",
+    "center": "Namangan shahri",
+    "districts": [
+      "Chortoq",
+      "Chust",
+      "Kosonsoy",
+      "Mingbuloq",
+      "Namangan",
+      "Norin",
+      "Pop",
+      "To‘raqo‘rg‘on",
+      "Uychi",
+      "Uchqo‘rg‘on",
+      "Yangiqo‘rg‘on",
+      "Davlatobod"
+    ]
+  },
+  {
+    "name": "Navoiy viloyati",
+    "center": "Navoiy shahri",
+    "districts": ["Konimex", "Karmana", "Qiziltepa", "Navbahor", "Nurota", "Tomdi", "Uchquduq", "Xatirchi"]
+  },
+  {
+    "name": "Qashqadaryo viloyati",
+    "center": "Qarshi shahri",
+    "districts": [
+      "Dehqonobod",
+      "Kasbi",
+      "Kitob",
+      "Koson",
+      "Mirishkor",
+      "Muborak",
+      "Nishon",
+      "Qarshi",
+      "Shahrisabz",
+      "Chiroqchi",
+      "Ko‘kdala",
+      "G‘uzor",
+      "Qamashi",
+      "Yakkabog‘"
+    ]
+  },
+  {
+    "name": "Samarqand viloyati",
+    "center": "Samarqand shahri",
+    "districts": [
+      "Bulung‘ur",
+      "Ishtixon",
+      "Jomboy",
+      "Kattaqo‘rg‘on",
+      "Narpay",
+      "Nurobod",
+      "Oqdaryo",
+      "Paxtachi",
+      "Payariq",
+      "Pastdarg‘om",
+      "Qo‘shrabot",
+      "Samarqand",
+      "Toyloq",
+      "Urgut"
+    ]
+  },
+  {
+    "name": "Sirdaryo viloyati",
+    "center": "Guliston shahri",
+    "districts": ["Boyovut", "Guliston", "Mirzaobod", "Oqoltin", "Sayxunobod", "Sardoba", "Sirdaryo", "Xovos"]
+  },
+  {
+    "name": "Surxondaryo viloyati",
+    "center": "Termiz shahri",
+    "districts": [
+      "Angor",
+      "Bandixon",
+      "Boysun",
+      "Denov",
+      "Jarqo‘rg‘on",
+      "Muzrabot",
+      "Oltinsoy",
+      "Qiziriq",
+      "Qumqo‘rg‘on",
+      "Sherobod",
+      "Sho‘rchi",
+      "Termiz",
+      "Uzun",
+      "Sariosiyo"
+    ]
+  },
+  {
+    "name": "Toshkent viloyati",
+    "center": "Nurafshon shahri",
+    "districts": [
+      "Bekobod",
+      "Bo‘stonliq",
+      "Bo‘ka",
+      "Chinoz",
+      "Qibray",
+      "Parkent",
+      "Piskent",
+      "Quyi Chirchiq",
+      "O‘rta Chirchiq",
+      "Yangiyo‘l",
+      "Yuqori Chirchiq",
+      "Zangiota",
+      "Ohangaron",
+      "Toshkent"
+    ]
+  },
+  {
+    "name": "Toshkent shahri",
+    "center": "Toshkent",
+    "districts": [
+      "Olmazor",
+      "Bektemir",
+      "Chilonzor",
+      "Chilanzar",
+      "Mirobod",
+      "Mirzo Ulug‘bek",
+      "Sergeli",
+      "Shayxontohur",
+      "Uchtepa",
+      "Yakkasaroy",
+      "Yangihayot",
+      "Yashnobod",
+      "Yunusobod"
+    ]
+  }
+]

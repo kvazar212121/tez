@@ -1,0 +1,354 @@
+:root {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --color-bg-shell: #0f172a;
+  --color-surface: #ffffff;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-accent: #f59e0b;
+  --color-accent-soft: #fffbeb;
+  --shadow-root: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 25px 80px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+}
+
+body {
+  background: radial-gradient(120% 80% at 50% 0%, #1e293b 0%, var(--color-bg-shell) 55%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 480px;
+  min-width: 0;
+  height: 100vh;
+  height: 100dvh;
+  background-color: var(--color-surface);
+  position: relative;
+  overflow: hidden;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-root);
+}
+
+@media (min-width: 520px) {
+  #root {
+    height: min(100vh, 920px);
+    height: min(100dvh, 920px);
+    border-radius: 24px;
+  }
+}
+
+/* /admin — alohida sahifa, bitta port */
+body.admin-route {
+  color: #f8fafc;
+  background-color: #0b1120;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(251, 191, 36, 0.12), transparent 50%),
+    radial-gradient(ellipse 80% 60% at 100% 50%, rgba(56, 189, 248, 0.08), transparent 45%),
+    radial-gradient(ellipse 70% 50% at 0% 80%, rgba(139, 92, 246, 0.07), transparent 45%),
+    linear-gradient(180deg, #0f172a 0%, #0b1120 40%, #020617 100%);
+  background-attachment: fixed;
+  display: block;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root.admin-route-root {
+  background: transparent;
+  max-width: 100%;
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Admin panel: mobil + desktop */
+.admin-panel {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: max(12px, env(safe-area-inset-left, 0px)) max(12px, env(safe-area-inset-right, 0px))
+    max(20px, env(safe-area-inset-bottom, 0px));
+  padding-top: max(16px, env(safe-area-inset-top, 0px));
+}
+
+.admin-panel button,
+.admin-panel a[role='button'] {
+  touch-action: manipulation;
+}
+
+@media (min-width: 768px) {
+  .admin-panel {
+    padding: 24px max(24px, env(safe-area-inset-right, 0px)) 32px;
+    padding-top: max(24px, env(safe-area-inset-top, 0px));
+  }
+}
+
+.admin-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admin-panel__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.admin-panel__header-actions a,
+.admin-panel__header-actions button {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+@media (min-width: 480px) {
+  .admin-panel__header-actions {
+    width: auto;
+    justify-content: flex-end;
+  }
+
+  .admin-panel__header-actions a,
+  .admin-panel__header-actions button {
+    flex: 0 0 auto;
+  }
+}
+
+.admin-panel__tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #334155;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.admin-panel__tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.admin-panel__tabs::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.admin-panel__tab {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.admin-panel__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .admin-panel__stats {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+}
+
+.admin-panel__role-note {
+  display: block;
+  margin-top: 8px;
+  margin-left: 0 !important;
+}
+
+@media (min-width: 640px) {
+  .admin-panel__role-note {
+    display: inline;
+    margin-top: 0;
+    margin-left: 8px !important;
+  }
+}
+
+.admin-panel__login {
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  padding-left: max(0px, env(safe-area-inset-left, 0px));
+  padding-right: max(0px, env(safe-area-inset-right, 0px));
+}
+
+.admin-panel__driver-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-panel__driver-card {
+  padding: 14px;
+  border-radius: 12px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.admin-panel__driver-card-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.admin-panel__table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -4px;
+}
+
+@media (min-width: 640px) {
+  .admin-panel__table-wrap {
+    margin: 0;
+  }
+}
+
+.admin-panel__group-add {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+@media (min-width: 480px) {
+  .admin-panel__group-add {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+}
+
+.admin-panel__member-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #334155;
+  font-size: 13px;
+}
+
+@media (min-width: 560px) {
+  .admin-panel__member-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.admin-panel-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Moderator yaratish: mobil — ustun; 640px+ — email / parol / tugma yonma-yon */
+.admin-panel__mod-form .admin-panel__mod-form-name {
+  width: 100%;
+  display: block;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.admin-panel__mod-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.admin-panel__mod-form-row > .admin-panel__mod-input,
+.admin-panel__mod-form-row > .admin-panel__mod-submit {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .admin-panel__mod-form-row {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .admin-panel__mod-form-row > .admin-panel__mod-input {
+    flex: 1 1 0;
+    min-width: 160px;
+    width: auto;
+    max-width: none;
+  }
+
+  .admin-panel__mod-form-row > .admin-panel__mod-submit {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 168px;
+    max-width: 240px;
+    white-space: nowrap;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.admin-panel__user-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.admin-panel__group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #475569;
+  color: #cbd5e1;
+}
+
+.admin-panel__user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}

@@ -1,0 +1,73 @@
+.driver-trip-timing {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.driver-trip-timing__caption {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.driver-trip-timing__modes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.driver-trip-timing__pill {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 999px;
+  background: #f8fafc;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.driver-trip-timing__pill--on {
+  border-color: #0ea5e9;
+  background: #f0f9ff;
+  color: #0f172a;
+}
+
+.driver-trip-timing__pill:active {
+  opacity: 0.92;
+}
+
+.driver-trip-timing__datetime {
+  margin-top: 12px;
+}
+
+.driver-trip-timing__datetime label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.driver-trip-timing__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #fff;
+  color: #0f172a;
+}
+
+.driver-trip-timing__input:focus {
+  outline: none;
+  border-color: #0ea5e9;
+}

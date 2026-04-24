@@ -1,0 +1,79 @@
+.order-popup {
+  min-width: 200px;
+  max-width: 260px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #222;
+}
+
+.order-popup__label {
+  font-weight: 800;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: #111;
+}
+
+.order-popup__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.order-popup__row--notes .order-popup__notes {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-weight: 500;
+  color: #334155;
+}
+
+.order-popup__k {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+}
+
+.order-popup__contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.order-popup__link {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-all;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.order-popup__link-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
+.order-popup__link:hover {
+  text-decoration: underline;
+}
+
+.order-popup__hint {
+  color: #666;
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+
+.order-popup__id {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  color: #aaa;
+  word-break: break-all;
+}

@@ -1,0 +1,411 @@
+/** @typedef {'uz' | 'ru'} AppLocale */
+
+/** @type {Record<AppLocale, Record<string, string>>} */
+export const STRINGS = {
+  uz: {
+    'lang.switch.aria.ru': 'Interfeysni rus tiliga o‘tkazish',
+    'lang.switch.aria.uz': 'Interfeysni o‘zbek tiliga o‘tkazish',
+
+    'gps.denied': 'GPS-ga ruxsat berilmadi. Iltimos, sozlamalardan ruxsat bering.',
+
+    'status.online': 'Tizimga ulangan',
+    'status.connecting': 'Ulanmoqda…',
+    'status.offline': 'Aloqa yoʻq',
+
+    'permission.title': 'Geolokatsiya zarur',
+    'permission.text':
+      'Atrofingizdagi taksilarni ko‘rish va buyurtma berish uchun GPS-ni yoqishingiz shart.',
+    'permission.cta': 'GPS-ni yoqish',
+
+    'role.welcome': 'Xush kelibsiz!',
+    'role.client': 'Mijozman',
+    'role.clientHint': 'Taksi chaqirish uchun',
+    'role.driver': 'Haydovchiman',
+    'role.driverHint': 'Pul ishlash uchun',
+
+    'reg.title': "Haydovchi bo'lish",
+    'reg.back': 'Orqaga',
+    'reg.fullName': 'Telegram orqali ismingiz',
+    'reg.fullNamePh': 'Ism sharifingiz (demo)',
+    'reg.phone': 'Telefon raqamingiz',
+    'reg.phonePh': '+998 yoki istalgan (demo)',
+    'reg.carBlock': "Avtomobil ma'lumotlari",
+    'reg.carModelPh': 'Mashina modeli (Masalan: Gentra)',
+    'reg.carNumberPh': 'Davlat raqami (Masalan: 01 A 777 AA)',
+    'reg.license': 'Guvohnoma seriyasi (Optional for demo)',
+    'reg.licensePh': 'AB 1234567',
+    'reg.submit': "Ro'yxatdan o'tish",
+
+    'postReg.title': 'Profilni to‘ldiring',
+    'postReg.text':
+      'Ro‘yxatdan muvaffaqiyatli o‘tdingiz. Endi o‘z rasmingiz, mashina rasmi va qayerdan ekanligingizni profilda ko‘rsating. Bu ma’lumotlarni to‘ldirsangiz, yo‘lovchilar sizni ishonchliroq deb qabul qiladi va buyurtma berishga tayyor bo‘ladi.',
+    'postReg.ok': 'Tushundim',
+
+    'map.hintTitle': 'Yo‘nalishni aniqlang',
+    'map.hintText':
+      'Qayerdan va qayerga ekanligingizni buyurtmada belgilang. Keyin mos mashinalar chiqadi. Boshqa yo‘lovchilar xaritada ko‘rinmaydi.',
+    'map.popup.youClient': 'Siz (mijoz)',
+    'map.popup.youDriver': 'Siz (haydovchi)',
+    'map.popup.youRoleDriver': 'Haydovchi',
+    'map.popup.youRoleClient': 'Mijoz',
+    'map.youLineDriver': 'Siz (Haydovchi)',
+    'map.youLineClient': 'Siz (Mijoz)',
+    'map.locate': 'Mening joyimga',
+
+    'bottom.editOrder': 'Buyurtma ma’lumotlari',
+
+    'overlay.driver.waitTitle': 'Yangi buyurtmalar kutilmoqda...',
+    'overlay.driver.offTitle': 'Faoliyat o‘chirilgan',
+    'overlay.client.routeTitle': 'Yo‘nalishni aniqlang',
+    'overlay.client.taxisTitle': 'Mavjud taksi',
+    'overlay.defaultTitle': 'Qayerga boramiz?',
+    'overlay.driver.waitSub': 'Atrofingizda faol mijozlar qidirilmoqda (xaritada {demoCount} ta demo mijoz)',
+    'overlay.driver.offSub': 'Mijozlar sizni xaritada ko‘rmaydi. Yo‘nalishni pastda ham sozlashingiz mumkin.',
+    'overlay.client.routeSub':
+      'Qayerdan va qayerga ekanligingizni buyurtmada belgilang — xaritada mos mashinalar chiqadi. Boshqa yo‘lovchilar ko‘rinmaydi.',
+    'overlay.client.noTaxis':
+      'Bu yo‘nalishda hozircha mos taksi topilmadi. Vaqt yoki yo‘nalishni o‘zgartirib ko‘ring.',
+    'overlay.client.taxisSub': '{count} ta mos taksi — markerda vaqt va bo‘sh o‘rindiqlar.',
+    'overlay.client.defaultSub': 'Atrofingizda {taxiCount} ta boʻsh taksi bor',
+    'overlay.action.driverOff': 'Faoliyatni o‘chirish',
+    'overlay.action.driverOn': 'Mijoz kutishni yoqish',
+    'overlay.action.clientRoute': 'Yo‘nalishni belgilash',
+
+    'orderPopup.taxi': 'Taksi',
+    'orderPopup.inCar': 'Salonda',
+    'orderPopup.empty': 'Bo‘sh',
+    'orderPopup.people': '{n} kishi',
+    'orderPopup.noOrder': 'Buyurtma ma’lumotlari hali kiritilmagan.',
+    'orderPopup.kind': 'Buyurtma turi',
+    'orderPopup.kindIr': 'Viloyatlararo (shahar / viloyat)',
+    'orderPopup.kindLocal': 'Mahalliy (yaqin masofa)',
+    'orderPopup.from': 'Qayerdan',
+    'orderPopup.to': 'Qayerga',
+    'orderPopup.when': 'Vaqt / shoshilinch',
+    'orderPopup.price': 'Narx',
+    'orderPopup.passengers': 'Yo‘lovchilar',
+    'orderPopup.notes': 'Shart / izoh',
+    'orderPopup.noContacts': 'Telefon yoki Telegram ko‘rsatilmagan',
+    'orderPopup.telegram': 'Telegram:',
+
+    'routeOffer.taxi': 'Taksi',
+    'routeOffer.free': 'Bo‘sh taksi',
+    'routeOffer.driverNote': 'Haydovchi eslatmasi',
+    'routeOffer.seats': "Bo‘sh o‘rindiq: {free} / {total}",
+    'routeOffer.note': 'Boshqa yo‘lovchilar ko‘rsatilmaydi.',
+
+    'profile.close': 'Yopish',
+    'profile.title': 'Profil',
+    'profile.badge.driver': 'Haydovchi',
+    'profile.badge.client': 'Mijoz',
+    'profile.name': 'Ism',
+    'profile.phone': 'Telefon',
+    'profile.car': 'Mashina',
+    'profile.plate': 'Davlat raqami',
+    'profile.license': 'Guvohnoma',
+    'profile.id': 'Ro‘yxatdan ID',
+    'profile.sectionPhotos': 'Ishonchlilik (rasmlar va manzil)',
+    'profile.avatar': 'O‘zingizning rasmingiz',
+    'profile.noPhoto': 'Rasm yo‘q',
+    'profile.pickPhoto': 'Rasm tanlash',
+    'profile.carPhoto': 'Mashina rasmi',
+    'profile.origin': 'Qayerdan ekansiz (shahar / viloyat)',
+    'profile.originPh': 'Masalan: Toshkent viloyati, Chirchiq',
+    'profile.saving': 'Saqlanmoqda…',
+    'profile.save': 'Saqlash',
+    'profile.clientHint':
+      'Yo‘nalishni asosiy ekrandagi buyurtmada belgilang — xaritada faqat shu yo‘nalishga mos mashinalar chiqadi (ketish vaqti va bo‘sh o‘rindiqlar). Boshqa yo‘lovchilar ko‘rinmaydi.',
+    'profile.state': 'Holat',
+    'profile.logout': 'Accountdan chiqish',
+    'profile.delete': 'Accountni o‘chirish',
+    'profile.saveFailed': 'Saqlanmadi',
+    'profile.error': 'Xatolik',
+
+    'profileBtn.aria': 'Profil',
+
+    'clientOrder.title': 'Buyurtma (haydovchiga)',
+    'clientOrder.kindLabel': 'Buyurtma turi',
+    'clientOrder.local': 'Mahalliy (yaqin masofa)',
+    'clientOrder.ir': 'Viloyatlararo (shahar / viloyat)',
+    'clientOrder.hintLocal': 'Bir shahar ichida yoki yaqin atrofda.',
+    'clientOrder.hintIr': 'Viloyatdan viloyatga, tumandan tumanga — ro‘yxatdan tanlang.',
+    'clientOrder.from': 'Qayerdan',
+    'clientOrder.to': 'Qayerga',
+    'clientOrder.fromPh': 'Masalan: Chorsu',
+    'clientOrder.toPh': 'Masalan: Yunusobod 12-mahalla',
+    'clientOrder.irFromR': 'Qayerdan — viloyat',
+    'clientOrder.irFromD': 'Qayerdan — tuman / shahar',
+    'clientOrder.irToR': 'Qayerga — viloyat',
+    'clientOrder.irToD': 'Qayerga — tuman / shahar',
+    'clientOrder.loading': 'Yuklanmoqda…',
+    'clientOrder.pick': 'Tanlang',
+    'clientOrder.when': 'Vaqt yoki shoshilinch',
+    'clientOrder.whenPh': 'Masalan: Srochno yoki 20:30',
+    'clientOrder.price': 'Narx (kelishiladi)',
+    'clientOrder.pricePh': 'Masalan: 40 000 – 55 000 so‘m',
+    'clientOrder.phone': 'Telefon',
+    'clientOrder.phonePh': '+998...',
+    'clientOrder.tg': 'Telegram (@username)',
+    'clientOrder.passengers': 'Necha kishi',
+    'clientOrder.notes': 'O‘zingizning shart yoki izoh (ixtiyoriy)',
+    'clientOrder.notesPh': 'Masalan: oldinga ketaman, bolalar bilan, yuk bilan…',
+    'clientOrder.cancel': 'Bekor qilish',
+    'clientOrder.save': 'Saqlash',
+    'clientOrder.alertIr': 'Viloyatlararo yo‘nalish uchun qayerdan va qayerga — viloyat va tumanni to‘liq tanlang.',
+    'clientOrder.defaultFrom': 'Hozirgi joylashuv',
+    'clientOrder.defaultWhen': 'Srochno',
+    'clientOrder.defaultPrice': 'Kelishiladi',
+
+    'driverService.pickHint':
+      'Qayerdan tuman — odatda majburiy: qaysi tumandan yo‘lovchi olib ketasiz. Qayerga — ko‘pincha viloyat/shahar yetarli; aniq tumanni ixtiyoriy tanlaysiz.',
+    'driverService.swap': 'Yo‘nalishni teskari aylantirish (qayerdan ↔ qayerga)',
+    'driverService.fromR': 'Qayerdan — viloyat',
+    'driverService.fromD': 'Qayerdan — tuman / shahar (majburiy)',
+    'driverService.toR': 'Qayerga — viloyat (shahar / markaz)',
+    'driverService.toD': 'Qayerga — tuman (ixtiyoriy)',
+    'driverService.toDEmpty': 'Viloyat markazi / aniq tuman tanlanmagan',
+    'driverService.title': 'Faoliyat yo‘nalishi',
+    'driverService.intro':
+      'Shahar ichida harakat qilasizmi yoki viloyatlararo yo‘nalishni tanlaysizmi — ixtiyoriy.',
+    'driverService.modeGroup': 'Faoliyat turi',
+    'driverService.cityPill': 'Shahar ichida',
+    'driverService.irPill': 'Viloyatlararo',
+    'driverService.cityRadio': 'Shahar ichida (yaqin masofa)',
+    'driverService.irRadio': 'Viloyatlararo yo‘nalish',
+    'driverService.cityHint':
+      'Asosan bir shahar yoki yaqin atrofda taksi xizmati ko‘rsatasiz. Ixtiyoriy ravishda keyin viloyat yo‘nalishini ham tanlashingiz mumkin.',
+    'driverService.irHint':
+      'Qayerdan tuman odatda majburiy (qayerdan olib ketasiz). Qayerga ko‘pincha viloyat markazi yetarli; aniq tumanni ixtiyoriy tanlaysiz.',
+
+    'trip.caption': 'Qachon ketasiz',
+    'trip.group': 'Ketish vaqti',
+    'trip.asap': 'Hoziroq',
+    'trip.scheduled': 'Ma’lum vaqtga',
+    'trip.datetime': 'Sana va vaqt',
+
+    'compact.boarding': 'Salonda necha kishi',
+    'compact.empty': '0 — bo‘sh',
+    'compact.people': '{n} kishi',
+    'compact.openModal': 'Yo‘nalish va ketishni sozlash',
+    'compact.activity': 'Faoliyat',
+    'compact.activityOn': 'Faoliyat yoqilgan',
+    'compact.activityOff': 'Faoliyat o‘chirilgan',
+
+    'routeModal.title': 'Yo‘nalish va ketishni sozlash',
+    'routeModal.close': 'Yopish',
+    'routeModal.done': 'Tayyor',
+
+    'confirm.delete': 'Hisobingiz bazadan o‘chiriladi. Davom etasizmi?',
+  },
+  ru: {
+    'lang.switch.aria.ru': 'Переключить интерфейс на русский',
+    'lang.switch.aria.uz': 'Переключить интерфейс на узбекский',
+
+    'gps.denied': 'Доступ к геолокации запрещён. Разрешите в настройках.',
+
+    'status.online': 'Подключено',
+    'status.connecting': 'Подключение…',
+    'status.offline': 'Нет связи',
+
+    'permission.title': 'Нужна геолокация',
+    'permission.text':
+      'Чтобы видеть такси рядом и оформлять заказ, включите GPS.',
+    'permission.cta': 'Включить GPS',
+
+    'role.welcome': 'Добро пожаловать!',
+    'role.client': 'Я пассажир',
+    'role.clientHint': 'Заказать такси',
+    'role.driver': 'Я водитель',
+    'role.driverHint': 'Заработок',
+
+    'reg.title': 'Стать водителем',
+    'reg.back': 'Назад',
+    'reg.fullName': 'Имя (как в Telegram)',
+    'reg.fullNamePh': 'ФИО (демо)',
+    'reg.phone': 'Телефон',
+    'reg.phonePh': '+998 или любой (демо)',
+    'reg.carBlock': 'Данные автомобиля',
+    'reg.carModelPh': 'Модель (например: Gentra)',
+    'reg.carNumberPh': 'Госномер (например: 01 A 777 AA)',
+    'reg.license': 'Серия прав (для демо необязательно)',
+    'reg.licensePh': 'AB 1234567',
+    'reg.submit': 'Зарегистрироваться',
+
+    'postReg.title': 'Заполните профиль',
+    'postReg.text':
+      'Регистрация прошла успешно. Добавьте в профиле своё фото, фото авто и откуда вы. Это повышает доверие пассажиров.',
+    'postReg.ok': 'Понятно',
+
+    'map.hintTitle': 'Укажите маршрут',
+    'map.hintText':
+      'Укажите откуда и куда едете в заказе. Появятся подходящие машины. Другие пассажиры на карте не показываются.',
+    'map.popup.youClient': 'Вы (пассажир)',
+    'map.popup.youDriver': 'Вы (водитель)',
+    'map.popup.youRoleDriver': 'Водитель',
+    'map.popup.youRoleClient': 'Пассажир',
+    'map.youLineDriver': 'Вы (водитель)',
+    'map.youLineClient': 'Вы (пассажир)',
+    'map.locate': 'К моей позиции',
+
+    'bottom.editOrder': 'Данные заказа',
+
+    'overlay.driver.waitTitle': 'Ожидаем новые заказы…',
+    'overlay.driver.offTitle': 'Активность выключена',
+    'overlay.client.routeTitle': 'Укажите направление',
+    'overlay.client.taxisTitle': 'Доступные такси',
+    'overlay.defaultTitle': 'Куда поедем?',
+    'overlay.driver.waitSub': 'Ищем активных пассажиров рядом (на карте {demoCount} демо-пассажиров)',
+    'overlay.driver.offSub': 'Пассажиры не видят вас на карте. Маршрут можно настроить ниже.',
+    'overlay.client.routeSub':
+      'Укажите откуда и куда в заказе — на карте появятся подходящие машины. Другие пассажиры не отображаются.',
+    'overlay.client.noTaxis':
+      'По этому направлению пока нет такси. Попробуйте другое время или маршрут.',
+    'overlay.client.taxisSub': '{count} подходящих такси — время и свободные места на маркере.',
+    'overlay.client.defaultSub': 'Рядом {taxiCount} свободных такси',
+    'overlay.action.driverOff': 'Выключить активность',
+    'overlay.action.driverOn': 'Включить ожидание',
+    'overlay.action.clientRoute': 'Задать маршрут',
+
+    'orderPopup.taxi': 'Такси',
+    'orderPopup.inCar': 'В салоне',
+    'orderPopup.empty': 'Пусто',
+    'orderPopup.people': '{n} чел.',
+    'orderPopup.noOrder': 'Данные заказа ещё не заполнены.',
+    'orderPopup.kind': 'Тип заказа',
+    'orderPopup.kindIr': 'Межобластной (город / область)',
+    'orderPopup.kindLocal': 'В городе (короткая дистанция)',
+    'orderPopup.from': 'Откуда',
+    'orderPopup.to': 'Куда',
+    'orderPopup.when': 'Время / срочность',
+    'orderPopup.price': 'Цена',
+    'orderPopup.passengers': 'Пассажиры',
+    'orderPopup.notes': 'Условие / примечание',
+    'orderPopup.noContacts': 'Телефон или Telegram не указаны',
+    'orderPopup.telegram': 'Telegram:',
+
+    'routeOffer.taxi': 'Такси',
+    'routeOffer.free': 'Свободное такси',
+    'routeOffer.driverNote': 'Заметка водителя',
+    'routeOffer.seats': 'Свободно мест: {free} / {total}',
+    'routeOffer.note': 'Другие пассажиры не показываются.',
+
+    'profile.close': 'Закрыть',
+    'profile.title': 'Профиль',
+    'profile.badge.driver': 'Водитель',
+    'profile.badge.client': 'Пассажир',
+    'profile.name': 'Имя',
+    'profile.phone': 'Телефон',
+    'profile.car': 'Авто',
+    'profile.plate': 'Госномер',
+    'profile.license': 'Права',
+    'profile.id': 'ID регистрации',
+    'profile.sectionPhotos': 'Доверие (фото и адрес)',
+    'profile.avatar': 'Ваше фото',
+    'profile.noPhoto': 'Нет фото',
+    'profile.pickPhoto': 'Выбрать фото',
+    'profile.carPhoto': 'Фото авто',
+    'profile.origin': 'Откуда вы (город / область)',
+    'profile.originPh': 'Например: Ташкентская обл., Чирчик',
+    'profile.saving': 'Сохранение…',
+    'profile.save': 'Сохранить',
+    'profile.clientHint':
+      'Маршрут укажите в заказе на главном экране — на карте только подходящие машины (время и свободные места). Другие пассажиры скрыты.',
+    'profile.state': 'Статус',
+    'profile.logout': 'Выйти из аккаунта',
+    'profile.delete': 'Удалить аккаунт',
+    'profile.saveFailed': 'Не сохранено',
+    'profile.error': 'Ошибка',
+
+    'profileBtn.aria': 'Профиль',
+
+    'clientOrder.title': 'Заказ (для водителя)',
+    'clientOrder.kindLabel': 'Тип заказа',
+    'clientOrder.local': 'В городе (короткая дистанция)',
+    'clientOrder.ir': 'Межобластной (город / область)',
+    'clientOrder.hintLocal': 'В пределах одного города или рядом.',
+    'clientOrder.hintIr': 'Из области в область — выберите из списка.',
+    'clientOrder.from': 'Откуда',
+    'clientOrder.to': 'Куда',
+    'clientOrder.fromPh': 'Например: Чорсу',
+    'clientOrder.toPh': 'Например: Юнусабад 12-квартал',
+    'clientOrder.irFromR': 'Откуда — область',
+    'clientOrder.irFromD': 'Откуда — район / город',
+    'clientOrder.irToR': 'Куда — область',
+    'clientOrder.irToD': 'Куда — район / город',
+    'clientOrder.loading': 'Загрузка…',
+    'clientOrder.pick': 'Выберите',
+    'clientOrder.when': 'Время или срочность',
+    'clientOrder.whenPh': 'Например: Срочно или 20:30',
+    'clientOrder.price': 'Цена (договорная)',
+    'clientOrder.pricePh': 'Например: 40 000 – 55 000 сум',
+    'clientOrder.phone': 'Телефон',
+    'clientOrder.phonePh': '+998...',
+    'clientOrder.tg': 'Telegram (@username)',
+    'clientOrder.passengers': 'Сколько человек',
+    'clientOrder.notes': 'Ваши условия или примечание (необязательно)',
+    'clientOrder.notesPh': 'Например: с багажом, с детьми…',
+    'clientOrder.cancel': 'Отмена',
+    'clientOrder.save': 'Сохранить',
+    'clientOrder.alertIr': 'Для межобластного маршрута полностью выберите области и районы.',
+    'clientOrder.defaultFrom': 'Текущее местоположение',
+    'clientOrder.defaultWhen': 'Срочно',
+    'clientOrder.defaultPrice': 'Договорная',
+
+    'driverService.pickHint':
+      'Район «откуда» обычно обязателен. «Куда» часто достаточно области; точный район — по желанию.',
+    'driverService.swap': 'Поменять направление (откуда ↔ куда)',
+    'driverService.fromR': 'Откуда — область',
+    'driverService.fromD': 'Откуда — район / город (обязательно)',
+    'driverService.toR': 'Куда — область (центр)',
+    'driverService.toD': 'Куда — район (необязательно)',
+    'driverService.toDEmpty': 'Центр области / район не выбран',
+    'driverService.title': 'Направление работы',
+    'driverService.intro': 'В городе или между областями — на ваш выбор.',
+    'driverService.modeGroup': 'Тип работы',
+    'driverService.cityPill': 'В городе',
+    'driverService.irPill': 'Межобластной',
+    'driverService.cityRadio': 'В городе (короткие поездки)',
+    'driverService.irRadio': 'Межобластной маршрут',
+    'driverService.cityHint':
+      'В основном работаете в одном городе или рядом. Позже можно включить межобластной режим.',
+    'driverService.irHint':
+      'Район отправления обычно обязателен. Для «куда» часто хватает центра области.',
+
+    'trip.caption': 'Когда выезжаете',
+    'trip.group': 'Время выезда',
+    'trip.asap': 'Сейчас',
+    'trip.scheduled': 'Ко времени',
+    'trip.datetime': 'Дата и время',
+
+    'compact.boarding': 'Сколько человек в салоне',
+    'compact.empty': '0 — пусто',
+    'compact.people': '{n} чел.',
+    'compact.openModal': 'Маршрут и время выезда',
+    'compact.activity': 'Активность',
+    'compact.activityOn': 'Активность включена',
+    'compact.activityOff': 'Активность выключена',
+
+    'routeModal.title': 'Маршрут и время выезда',
+    'routeModal.close': 'Закрыть',
+    'routeModal.done': 'Готово',
+
+    'confirm.delete': 'Аккаунт будет удалён из базы. Продолжить?',
+  },
+};
+
+/**
+ * @param {AppLocale} locale
+ * @param {string} key
+ * @param {Record<string, string | number>} [vars]
+ */
+export function translate(locale, key, vars) {
+  const table = STRINGS[locale] || STRINGS.uz;
+  let s = table[key];
+  if (s == null) s = STRINGS.uz[key] ?? key;
+  if (vars && typeof s === 'string') {
+    for (const [k, v] of Object.entries(vars)) {
+      s = s.split(`{${k}}`).join(String(v));
+    }
+  }
+  return s;
+}
