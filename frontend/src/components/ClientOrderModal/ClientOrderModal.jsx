@@ -50,7 +50,7 @@ function deriveInterregionalIds(regions, initialOrder) {
 export default function ClientOrderModal({ initialOrder, onSave, onClose }) {
   const { t } = useLocale();
   const [orderKind, setOrderKind] = useState(() =>
-    initialOrder?.orderKind === 'interregional' ? 'interregional' : 'local',
+    initialOrder?.orderKind === 'local' ? 'local' : 'interregional',
   );
   const [form, setForm] = useState(() => ({
     from: initialOrder?.from ?? '',
@@ -124,6 +124,7 @@ export default function ClientOrderModal({ initialOrder, onSave, onClose }) {
       telegram: form.telegram.trim(),
       passengerCount: pc,
       passengerNotes: form.passengerNotes.trim(),
+      isActive: initialOrder?.isActive !== false,
     };
 
     if (orderKind === 'local') {
@@ -193,19 +194,19 @@ export default function ClientOrderModal({ initialOrder, onSave, onClose }) {
             <input
               type="radio"
               name="orderKind"
-              checked={orderKind === 'local'}
-              onChange={() => handleKindChange('local')}
+              checked={orderKind === 'interregional'}
+              onChange={() => handleKindChange('interregional')}
             />
-            <span>{t('clientOrder.local')}</span>
+            <span>{t('clientOrder.ir')}</span>
           </label>
           <label className="client-order-modal__kind-option">
             <input
               type="radio"
               name="orderKind"
-              checked={orderKind === 'interregional'}
-              onChange={() => handleKindChange('interregional')}
+              checked={orderKind === 'local'}
+              onChange={() => handleKindChange('local')}
             />
-            <span>{t('clientOrder.ir')}</span>
+            <span>{t('clientOrder.local')}</span>
           </label>
         </div>
 

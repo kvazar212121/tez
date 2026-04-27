@@ -10,6 +10,7 @@ const multer = require('multer');
 const { getPool, initSchema } = require('./db');
 const { DEFAULT_PORT } = require('./config');
 const { createAdminRouter } = require('./adminRouter');
+require('./telegramBot'); // Botni ishga tushirish qatori qo'shildi
 
 const REGIONS_STATIC = require(path.join(__dirname, '..', 'shared', 'regions.json'));
 
@@ -66,6 +67,8 @@ function rideRequestRowToJson(row) {
     id: row.id,
     orderKind: row.order_kind,
     status: row.status,
+    phone: row.phone,
+    telegram: row.telegram,
     fromPlace: row.from_place,
     toPlace: row.to_place,
     pickupLat: row.pickup_lat,
@@ -76,9 +79,16 @@ function rideRequestRowToJson(row) {
     toDistrictId: row.to_district_id,
     fromLabel: row.from_label,
     toLabel: row.to_label,
+    price: row.price,
+    when: row.when,
+    // Add compatible aliases for frontend popup
+    from: row.from_label || row.from_place,
+    to: row.to_label || row.to_place,
     passengerCount: row.passenger_count,
     passengerNotes: row.passenger_notes,
     createdAt: row.created_at,
+    lastSeenAt: row.last_seen_at,
+    id_telegram: row.id_telegram,
   };
 }
 
@@ -111,6 +121,8 @@ function driverRowToJson(row) {
     bannedAt: banned ? row.banned_at : null,
     groupId: row.group_id != null ? row.group_id : null,
     groupName: row.group_name || null,
+    lastSeenAt: row.last_seen_at || null,
+    idTelegram: row.id_telegram != null ? row.id_telegram : null,
   };
 }
 
@@ -172,15 +184,35 @@ app.post('/api/drivers', async (req, res) => {
   const car_model = String(body.carModel ?? '').trim();
   const car_number = String(body.carNumber ?? '').trim();
   const license_number = String(body.licenseNumber ?? '').trim();
+  const invite_code = String(body.inviteCode ?? '').trim().toUpperCase();
+  const id_telegram = body.idTelegram != null ? body.idTelegram : null;
 
   if (!full_name && !phone) {
     return res.status(400).json({ message: "Kamida ism yoki telefon kiriting (demo)." });
   }
 
   try {
+    let group_id = null;
+    if (invite_code) {
+      const { rows: grMeta } = await pool.query(
+        'SELECT id FROM moderator_groups WHERE invite_code = $1',
+        [invite_code]
+      );
+      if (grMeta.length > 0) {
+        group_id = grMeta[0].id;
+      }
+    }
+
     const result = await pool.query(
-      `INSERT INTO drivers (full_name, phone, car_model, car_number, license_number)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO drivers (full_name, phone, car_model, car_number, license_number, group_id, signup_invite_code, id_telegram)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       ON CONFLICT (id_telegram) DO UPDATE SET
+         full_name = EXCLUDED.full_name,
+         phone = EXCLUDED.phone,
+         car_model = EXCLUDED.car_model,
+         car_number = EXCLUDED.car_number,
+         license_number = EXCLUDED.license_number,
+         group_id = COALESCE(EXCLUDED.group_id, drivers.group_id)
        RETURNING id, created_at`,
       [
         full_name || '—',
@@ -188,6 +220,9 @@ app.post('/api/drivers', async (req, res) => {
         car_model || '—',
         car_number || '—',
         license_number || null,
+        group_id,
+        invite_code || null,
+        id_telegram
       ],
     );
     res.status(201).json({
@@ -197,6 +232,27 @@ app.post('/api/drivers', async (req, res) => {
   } catch (err) {
     console.error('POST /api/drivers', err);
     res.status(500).json({ message: 'Ma’lumotlar bazasiga yozishda xatolik.' });
+  }
+});
+
+/** Haydovchini Telegram ID orqali olish */
+app.get('/api/drivers/telegram/:telegramId', async (req, res) => {
+  const pool = getPool();
+  if (!pool) return res.status(503).json({ message: 'Bazaga ulanmagan' });
+  
+  const telegramId = req.params.telegramId;
+  try {
+    const { rows } = await pool.query(
+      `SELECT d.*, mg.name AS group_name FROM drivers d
+       LEFT JOIN moderator_groups mg ON mg.id = d.group_id 
+       WHERE d.id_telegram = $1`,
+      [telegramId]
+    );
+    if (!rows.length) return res.status(404).json({ message: 'Topilmadi' });
+    res.json(driverRowToJson(rows[0]));
+  } catch (err) {
+    console.error('GET /api/drivers/telegram/:telegramId', err);
+    res.status(500).json({ message: 'Server xatosi' });
   }
 });
 
@@ -352,6 +408,12 @@ app.post('/api/ride-requests', async (req, res) => {
     body.pickupLng != null && body.pickupLng !== '' ? Number(body.pickupLng) : null;
   const fromLabel = body.fromLabel != null ? String(body.fromLabel).trim() || null : null;
   const toLabel = body.toLabel != null ? String(body.toLabel).trim() || null : null;
+  const phone = body.phone != null ? String(body.phone).trim() || null : null;
+  const telegram = body.telegram != null ? String(body.telegram).trim() || null : null;
+  const price = body.price != null ? String(body.price).trim() || null : null;
+  const when = body.when != null ? String(body.when).trim() || null : null;
+  const idTelegram = body.id_telegram != null ? body.id_telegram : null;
+
   const passengerNotes =
     body.passengerNotes != null ? String(body.passengerNotes).trim() || null : null;
   const passengerCount = Math.min(
@@ -404,13 +466,15 @@ app.post('/api/ride-requests', async (req, res) => {
   try {
     const ins = await pool.query(
       `INSERT INTO ride_requests (
-        order_kind, status, from_place, to_place, pickup_lat, pickup_lng,
+        order_kind, status, phone, telegram, from_place, to_place, pickup_lat, pickup_lng,
         from_region_id, from_district_id, to_region_id, to_district_id,
-        from_label, to_label, passenger_count, passenger_notes
-      ) VALUES ($1,'open',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+        from_label, to_label, price, "when", passenger_count, passenger_notes, id_telegram
+      ) VALUES ($1,'open',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
       RETURNING *`,
       [
         orderKind,
+        phone,
+        telegram,
         fromPlace,
         toPlace,
         pickupLat,
@@ -421,8 +485,11 @@ app.post('/api/ride-requests', async (req, res) => {
         toDistrictId,
         fromLabel,
         toLabel,
+        price,
+        when,
         passengerCount,
         passengerNotes,
+        idTelegram
       ],
     );
     res.status(201).json(rideRequestRowToJson(ins.rows[0]));
@@ -492,6 +559,25 @@ app.get('/api/ride-requests', async (req, res) => {
   }
 });
 
+/** Xarita uchun barcha aktiv buyurtmalarni olish (so'nggi 30 daqiqa) */
+app.get('/api/map/ride-requests', async (req, res) => {
+  const pool = getPool();
+  if (!pool) return res.status(503).json([]);
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM ride_requests 
+       WHERE status = 'open' 
+       AND last_seen_at > NOW() - INTERVAL '30 minutes'
+       ORDER BY last_seen_at DESC
+       LIMIT 200`
+    );
+    res.json(rows.map(rideRequestRowToJson));
+  } catch (err) {
+    console.error('GET /api/map/ride-requests', err);
+    res.json([]);
+  }
+});
+
 // --- Public API: Shikoyat yuborish ---
 app.post('/api/complaints', async (req, res) => {
   const pool = getPool();
@@ -544,7 +630,18 @@ io.on('connection', (socket) => {
     if (data.acceptingClients !== undefined) {
       payload.acceptingClients = data.acceptingClients;
     }
+    payload.lastSeenAt = new Date().toISOString();
     socket.broadcast.emit('user_moved', payload);
+
+    // Bazada vaqtini yangilash
+    const pool = getPool();
+    if (pool) {
+      if (data.role === 'driver' && data.driverId) {
+        pool.query('UPDATE drivers SET last_seen_at = NOW() WHERE id = $1', [data.driverId]).catch(() => {});
+      } else if (data.role === 'client' && data.rideRequestId) {
+        pool.query('UPDATE ride_requests SET last_seen_at = NOW(), pickup_lat = $1, pickup_lng = $2 WHERE id = $3', [data.lat, data.lng, data.rideRequestId]).catch(() => {});
+      }
+    }
   });
 
   socket.on('disconnect', () => {

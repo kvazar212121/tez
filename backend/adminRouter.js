@@ -343,17 +343,44 @@ function createAdminRouter({ getPool }) {
       return res.status(400).json({ message: 'Parol kamida 8 belgi.' });
     }
     try {
+      await pool.query('BEGIN');
       const hash = await hashPassword(password);
+      
+      // 1. Moderator yaratish
       const ins = await pool.query(
         `INSERT INTO admin_users (email, password_hash, role, display_name, created_by_id)
          VALUES ($1, $2, 'moderator', $3, $4)
          RETURNING id, email, role, display_name, created_at, created_by_id`,
         [email, hash, displayName, req.admin.sub],
       );
-      res.status(201).json(adminRowPublic(ins.rows[0]));
+      const mod = ins.rows[0];
+
+      // 2. Guruh yaratish (Moderator nomi bilan)
+      const groupCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const groupRes = await pool.query(
+        `INSERT INTO moderator_groups (name, description, invite_code)
+         VALUES ($1, $2, $3)
+         RETURNING id`,
+        [displayName, `Moderator ${displayName} uchun avtomatik guruh`, groupCode]
+      );
+      const groupId = groupRes.rows[0].id;
+
+      // 3. Biriktirish
+      await pool.query(
+        `INSERT INTO moderator_group_members (group_id, admin_user_id, assigned_by_admin_id)
+         VALUES ($1, $2, $3)`,
+        [groupId, mod.id, req.admin.sub]
+      );
+
+      await pool.query('COMMIT');
+      res.status(201).json(adminRowPublic(mod));
     } catch (err) {
+      await pool.query('ROLLBACK');
       if (err.code === '23505') {
-        return res.status(409).json({ message: 'Bu email allaqachon ro‘yxatdan o‘tgan.' });
+        const msg = err.constraint === 'moderator_groups_name_key' 
+          ? 'Bunday nomli guruh allaqachon bor, boshqacha ism ishlating.'
+          : 'Bu email allaqachon ro‘yxatdan o‘tgan.';
+        return res.status(409).json({ message: msg });
       }
       console.error('POST /api/admin/users/moderator', err);
       res.status(500).json({ message: 'Moderator yaratishda xatolik.' });
@@ -398,6 +425,8 @@ function createAdminRouter({ getPool }) {
       description: g.description || '',
       sortOrder: g.sort_order,
       createdAt: g.created_at,
+      inviteCode: g.invite_code || null,
+      inviteLink: g.invite_code ? `https://t.me/yurtaxi_bot?start=${g.invite_code}` : null,
       members: members || [],
       driverCount: Number.isFinite(dc) ? dc : 0,
     };
@@ -460,27 +489,71 @@ function createAdminRouter({ getPool }) {
     return groups.map((g) => groupPublic(g, byG.get(g.id) || [], g.driver_count));
   }
 
-  router.get('/stats', requireAuth, requireStaff, async (_req, res) => {
+  router.get('/stats', requireAuth, requireStaff, async (req, res) => {
     const pool = getPool();
     if (!pool) {
       return res.status(503).json({ message: 'Ma’lumotlar bazasi mavjud emas.' });
     }
     try {
-      const { rows } = await pool.query(`SELECT
-        (SELECT COUNT(*)::int FROM admin_users WHERE is_active = true AND role = 'super_admin') AS super_admins,
-        (SELECT COUNT(*)::int FROM admin_users WHERE is_active = true AND role = 'moderator') AS moderators,
-        (SELECT COUNT(*)::int FROM admin_users WHERE is_active = false) AS admins_inactive,
-        (SELECT COUNT(*)::int FROM moderator_groups) AS groups,
-        (SELECT COUNT(*)::int FROM drivers) AS drivers,
-        (SELECT COUNT(*)::int FROM drivers WHERE is_banned = true) AS drivers_banned,
-        (SELECT COUNT(*)::int FROM ride_requests) AS ride_requests_total,
-        (SELECT COUNT(*)::int FROM ride_requests WHERE status = 'open') AS ride_open,
-        (SELECT COUNT(*)::int FROM ride_requests WHERE status = 'matched') AS ride_matched,
-        (SELECT COUNT(*)::int FROM ride_requests WHERE status = 'cancelled') AS ride_cancelled,
-        (SELECT COUNT(*)::int FROM ride_requests WHERE created_at > NOW() - INTERVAL '24 hours') AS rides_24h,
-        (SELECT COUNT(*)::int FROM ride_requests WHERE created_at > NOW() - INTERVAL '7 days') AS rides_7d
-      `);
-      res.json(rows[0]);
+      if (req.admin.role === 'super_admin') {
+        const { rows } = await pool.query(`SELECT
+          (SELECT COUNT(*)::int FROM admin_users WHERE is_active = true AND role = 'super_admin') AS super_admins,
+          (SELECT COUNT(*)::int FROM admin_users WHERE is_active = true AND role = 'moderator') AS moderators,
+          (SELECT COUNT(*)::int FROM admin_users WHERE is_active = false) AS admins_inactive,
+          (SELECT COUNT(*)::int FROM moderator_groups) AS groups,
+          (SELECT COUNT(*)::int FROM drivers) AS drivers,
+          (SELECT COUNT(*)::int FROM drivers WHERE is_banned = true) AS drivers_banned,
+          (SELECT COUNT(*)::int FROM ride_requests) AS ride_requests_total,
+          (SELECT COUNT(*)::int FROM ride_requests WHERE status = 'open') AS ride_open,
+          (SELECT COUNT(*)::int FROM ride_requests WHERE status = 'matched') AS ride_matched,
+          (SELECT COUNT(*)::int FROM ride_requests WHERE status = 'cancelled') AS ride_cancelled,
+          (SELECT COUNT(*)::int FROM ride_requests WHERE created_at > NOW() - INTERVAL '24 hours') AS rides_24h,
+          (SELECT COUNT(*)::int FROM ride_requests WHERE created_at > NOW() - INTERVAL '7 days') AS rides_7d
+        `);
+        return res.json(rows[0]);
+      } else {
+        // Moderator: faqat o'ziga biriktirilgan guruhlardagi haydovchilar statistikasi
+        const { rows: mine } = await pool.query(
+          `SELECT group_id FROM moderator_group_members WHERE admin_user_id = $1`,
+          [req.admin.sub],
+        );
+        const gids = mine.map((r) => r.group_id);
+
+        if (gids.length === 0) {
+          return res.json({
+            super_admins: 0,
+            moderators: 0,
+            admins_inactive: 0,
+            groups: 0,
+            drivers: 0,
+            drivers_banned: 0,
+            ride_requests_total: 0,
+            ride_open: 0,
+            ride_matched: 0,
+            ride_cancelled: 0,
+            rides_24h: 0,
+            rides_7d: 0,
+          });
+        }
+
+        const { rows } = await pool.query(
+          `SELECT
+            0 AS super_admins,
+            0 AS moderators,
+            0 AS admins_inactive,
+            (SELECT COUNT(*)::int FROM moderator_groups WHERE id = ANY($1::int[])) AS groups,
+            (SELECT COUNT(*)::int FROM drivers WHERE group_id = ANY($1::int[])) AS drivers,
+            (SELECT COUNT(*)::int FROM drivers WHERE group_id = ANY($1::int[]) AND is_banned = true) AS drivers_banned,
+            0 AS ride_requests_total,
+            0 AS ride_open,
+            0 AS ride_matched,
+            0 AS ride_cancelled,
+            0 AS rides_24h,
+            0 AS rides_7d`,
+          [gids],
+        );
+        res.json(rows[0]);
+      }
     } catch (err) {
       console.error('GET /api/admin/stats', err);
       res.status(500).json({ message: 'Statistika xatosi.' });
@@ -495,33 +568,42 @@ function createAdminRouter({ getPool }) {
     const limit = Math.min(500, Math.max(1, parseInt(req.query.limit || '100', 10) || 100));
     const onlyBanned = String(req.query.banned || '') === '1';
     try {
-      const joined = onlyBanned
-        ? `SELECT d.*, mg.name AS group_name
-           FROM drivers d
-           LEFT JOIN moderator_groups mg ON mg.id = d.group_id
-           WHERE d.is_banned = true
-           ORDER BY d.banned_at DESC NULLS LAST, d.id DESC LIMIT $1`
-        : `SELECT d.*, mg.name AS group_name
-           FROM drivers d
-           LEFT JOIN moderator_groups mg ON mg.id = d.group_id
-           ORDER BY d.id DESC LIMIT $1`;
-      let rows;
-      try {
-        rows = (await pool.query(joined, [limit])).rows;
-      } catch (e) {
-        if (e.code === '42703') {
-          rows = (
-            await pool.query(
-              onlyBanned
-                ? `SELECT * FROM drivers WHERE is_banned = true ORDER BY banned_at DESC NULLS LAST, id DESC LIMIT $1`
-                : `SELECT * FROM drivers ORDER BY id DESC LIMIT $1`,
-              [limit],
-            )
-          ).rows;
-        } else {
-          throw e;
-        }
+      let gids = null;
+      if (req.admin.role !== 'super_admin') {
+        const { rows: mine } = await pool.query(
+          `SELECT group_id FROM moderator_group_members WHERE admin_user_id = $1`,
+          [req.admin.sub],
+        );
+        gids = mine.map((r) => r.group_id);
+        if (gids.length === 0) return res.json([]);
       }
+
+      let query;
+      let params = [limit];
+
+      if (gids) {
+        query = onlyBanned
+          ? `SELECT d.*, mg.name AS group_name FROM drivers d
+             LEFT JOIN moderator_groups mg ON mg.id = d.group_id
+             WHERE d.group_id = ANY($2::int[]) AND d.is_banned = true
+             ORDER BY d.banned_at DESC NULLS LAST, d.id DESC LIMIT $1`
+          : `SELECT d.*, mg.name AS group_name FROM drivers d
+             LEFT JOIN moderator_groups mg ON mg.id = d.group_id
+             WHERE d.group_id = ANY($2::int[])
+             ORDER BY d.id DESC LIMIT $1`;
+        params.push(gids);
+      } else {
+        query = onlyBanned
+          ? `SELECT d.*, mg.name AS group_name FROM drivers d
+             LEFT JOIN moderator_groups mg ON mg.id = d.group_id
+             WHERE d.is_banned = true
+             ORDER BY d.banned_at DESC NULLS LAST, d.id DESC LIMIT $1`
+          : `SELECT d.*, mg.name AS group_name FROM drivers d
+             LEFT JOIN moderator_groups mg ON mg.id = d.group_id
+             ORDER BY d.id DESC LIMIT $1`;
+      }
+
+      const { rows } = await pool.query(query, params);
       res.json(rows.map(driverAdminJson));
     } catch (err) {
       console.error('GET /api/admin/drivers', err);
@@ -544,21 +626,26 @@ function createAdminRouter({ getPool }) {
     const banned = req.body.banned === true || req.body.banned === 'true';
     const reason = banned ? String(req.body?.reason || '').trim() || null : null;
     try {
-      const { rows } = await pool.query('SELECT id FROM drivers WHERE id = $1', [driverId]);
-      if (!rows.length) {
-        return res.status(404).json({ message: 'Haydovchi topilmadi.' });
-      }
-      if (banned) {
-        await pool.query(
-          `UPDATE drivers SET is_banned = true, ban_reason = $1, banned_at = NOW(), banned_by_admin_id = $2 WHERE id = $3`,
-          [reason, req.admin.sub, driverId],
+      if (req.admin.role !== 'super_admin') {
+        const { rows: mine } = await pool.query(
+          `SELECT group_id FROM moderator_group_members WHERE admin_user_id = $1`,
+          [req.admin.sub],
         );
-      } else {
-        await pool.query(
-          `UPDATE drivers SET is_banned = false, ban_reason = NULL, banned_at = NULL, banned_by_admin_id = NULL WHERE id = $1`,
-          [driverId],
-        );
+        const gids = mine.map((r) => r.group_id);
+        const { rows: dr } = await pool.query('SELECT group_id FROM drivers WHERE id = $1', [driverId]);
+        if (!dr.length) return res.status(404).json({ message: 'Haydovchi topilmadi.' });
+        if (!dr[0].group_id || !gids.includes(dr[0].group_id)) {
+          return res.status(403).json({ message: 'Ushbu haydovchini bloklash uchun ruxsat yo‘q.' });
+        }
       }
+
+      await pool.query(
+        banned
+          ? `UPDATE drivers SET is_banned = true, ban_reason = $1, banned_at = NOW(), banned_by_admin_id = $2 WHERE id = $3`
+          : `UPDATE drivers SET is_banned = false, ban_reason = NULL, banned_at = NULL, banned_by_admin_id = NULL WHERE id = $1`,
+        banned ? [reason, req.admin.sub, driverId] : [driverId],
+      );
+
       const { rows: withG } = await pool.query(
         `SELECT d.*, mg.name AS group_name FROM drivers d
          LEFT JOIN moderator_groups mg ON mg.id = d.group_id WHERE d.id = $1`,
@@ -633,8 +720,19 @@ function createAdminRouter({ getPool }) {
     const note = req.body?.note != null ? String(req.body.note).trim() || null : null;
 
     try {
-      const { rows } = await pool.query('SELECT id FROM drivers WHERE id = $1', [driverId]);
-      if (!rows.length) return res.status(404).json({ message: 'Haydovchi topilmadi.' });
+      const { rows: dr } = await pool.query('SELECT group_id FROM drivers WHERE id = $1', [driverId]);
+      if (!dr.length) return res.status(404).json({ message: 'Haydovchi topilmadi.' });
+
+      if (req.admin.role !== 'super_admin') {
+        const { rows: mine } = await pool.query(
+          `SELECT group_id FROM moderator_group_members WHERE admin_user_id = $1`,
+          [req.admin.sub],
+        );
+        const gids = mine.map((r) => r.group_id);
+        if (!dr[0].group_id || !gids.includes(dr[0].group_id)) {
+          return res.status(403).json({ message: 'Ushbu haydovchi to‘lovini boshqarish uchun ruxsat yo‘q.' });
+        }
+      }
 
       let expiresAt = null;
       if (status === 'paid') {
@@ -670,8 +768,21 @@ function createAdminRouter({ getPool }) {
     if (Number.isNaN(driverId)) return res.status(400).json({ message: 'Noto`g`ri haydovchi ID.' });
 
     try {
-      const { rowCount } = await pool.query('DELETE FROM drivers WHERE id = $1', [driverId]);
-      if (rowCount === 0) return res.status(404).json({ message: 'Haydovchi topilmadi oki allaqachon o`chirilgan.' });
+      const { rows: dr } = await pool.query('SELECT group_id FROM drivers WHERE id = $1', [driverId]);
+      if (!dr.length) return res.status(404).json({ message: 'Haydovchi topilmadi oki allaqachon o`chirilgan.' });
+
+      if (req.admin.role !== 'super_admin') {
+        const { rows: mine } = await pool.query(
+          `SELECT group_id FROM moderator_group_members WHERE admin_user_id = $1`,
+          [req.admin.sub],
+        );
+        const gids = mine.map((r) => r.group_id);
+        if (!dr[0].group_id || !gids.includes(dr[0].group_id)) {
+          return res.status(403).json({ message: 'Ushbu haydovchini o‘chirish uchun ruxsat yo‘q.' });
+        }
+      }
+
+      await pool.query('DELETE FROM drivers WHERE id = $1', [driverId]);
       res.json({ success: true, message: 'Haydovchi o`chirib yuborildi.' });
     } catch (err) {
       console.error('DELETE /api/admin/drivers/:id', err);
@@ -685,19 +796,45 @@ function createAdminRouter({ getPool }) {
     if (!pool) return res.status(503).json({ message: 'Ma`lumotlar bazasi mavjud emas.' });
     
     try {
-      // E'tirozlar va driver info
-      const query = `
-        SELECT c.*, 
-               d.full_name as driver_name, d.car_number as driver_car 
-        FROM complaints c
-        LEFT JOIN drivers d ON d.id = c.driver_id
-        ORDER BY c.created_at DESC
-        LIMIT 500
-      `;
-      const { rows } = await pool.query(query);
+      let gids = null;
+      if (req.admin.role !== 'super_admin') {
+        const { rows: mine } = await pool.query(
+          `SELECT group_id FROM moderator_group_members WHERE admin_user_id = $1`,
+          [req.admin.sub],
+        );
+        gids = mine.map((r) => r.group_id);
+        if (gids.length === 0) return res.json([]);
+      }
+
+      let query;
+      let params = [];
+
+      if (gids) {
+        query = `
+          SELECT c.*, 
+                 d.full_name as driver_name, d.car_number as driver_car 
+          FROM complaints c
+          LEFT JOIN drivers d ON d.id = c.driver_id
+          WHERE d.group_id = ANY($1::int[]) OR c.driver_id IS NULL
+          ORDER BY c.created_at DESC
+          LIMIT 500
+        `;
+        params.push(gids);
+      } else {
+        query = `
+          SELECT c.*, 
+                 d.full_name as driver_name, d.car_number as driver_car 
+          FROM complaints c
+          LEFT JOIN drivers d ON d.id = c.driver_id
+          ORDER BY c.created_at DESC
+          LIMIT 500
+        `;
+      }
+
+      const { rows } = await pool.query(query, params);
       res.json(rows);
     } catch (err) {
-      if (err.code === '42P01') return res.json([]); // Table yoq bolsa bosh array public router da yasalmagan bolsa
+      if (err.code === '42P01') return res.json([]); 
       console.error('GET /api/admin/complaints', err);
       res.status(500).json({ message: 'E`tirozlarni yuklashda xatolik.' });
     }

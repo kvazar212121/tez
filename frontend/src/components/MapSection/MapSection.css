@@ -72,3 +72,98 @@
 .map-locate-btn:active {
   transform: scale(0.96);
 }
+
+/* Taxi marker with star */
+.taxi-marker-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.taxi-marker-star {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  text-shadow: 0 0 5px white, 0 0 10px gold;
+  z-index: 10;
+  animation: star-bounce 2s infinite ease-in-out;
+}
+
+.taxi-marker-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.taxi-marker-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+@keyframes star-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+/* Client marker waving and glowing */
+.client-marker-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.client-marker-hand {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  font-size: 16px;
+  z-index: 10;
+  transform-origin: 70% 70%;
+  animation: hand-wave 1.5s infinite ease-in-out;
+}
+
+.client-marker-svg {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 5;
+}
+
+.client-marker-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background: rgba(51, 144, 236, 0.4);
+  border-radius: 50%;
+  z-index: 1;
+  filter: blur(8px);
+  animation: client-pulse 2s infinite ease-in-out;
+}
+
+.client-marker-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+@keyframes hand-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(20deg); }
+  75% { transform: rotate(-10deg); }
+}
+
+@keyframes client-pulse {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+}

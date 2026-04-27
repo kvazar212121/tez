@@ -4,7 +4,7 @@ import { useLocale } from '../i18n/LocaleContext';
 import { DEMO_ROUTE_OFFERS } from '../demoRouteOffers';
 import { DEMO_CLIENT_MARKERS } from '../demoMijozlar';
 import { DEFAULT_CLIENT_ORDER, buildInitialDriverData } from '../appDefaults';
-import { filterRouteOffersForOrder, isClientRouteDefined, packDriverService } from '../orderRouteUtils';
+import { filterRouteOffersForOrder, isClientRouteDefined, packDriverService, isOrderMatchDriver } from '../orderRouteUtils';
 import { clearPersistedState, loadPersistedState, savePersistedState } from '../persistState';
 import { socket } from '../socket';
 
@@ -15,6 +15,7 @@ export function useTaxiAppState() {
   // Telegram WebApp state
   const [telegramUser, setTelegramUser] = useState(null);
   const [isTelegram, setIsTelegram] = useState(false);
+  const [startParam, setStartParam] = useState(null);
 
   const [status, setStatus] = useState('connecting');
   const [role, setRole] = useState(initial?.role ?? null);
@@ -40,6 +41,9 @@ export function useTaxiAppState() {
     ...(initial?.clientOrder && typeof initial.clientOrder === 'object' ? initial.clientOrder : {}),
   }));
   const [clientOrderOpen, setClientOrderOpen] = useState(false);
+  const [clientActiveNoticeOpen, setClientActiveNoticeOpen] = useState(false);
+  const [driverActiveNoticeOpen, setDriverActiveNoticeOpen] = useState(false);
+  const [dbUsers, setDbUsers] = useState({});
 
   const roleRef = useRef(role);
   const isDriverRegisteredRef = useRef(isDriverRegistered);
@@ -64,17 +68,30 @@ export function useTaxiAppState() {
       
       // Telegram user ma'lumotlarini olish
       const user = tg.initDataUnsafe?.user;
+      const param = tg.initDataUnsafe?.start_param;
+      if (param) setStartParam(param);
+
       if (user) {
         setTelegramUser(user);
-        // Agar haydovchi ro'yxatdan o'tmagan bo'lsa, Telegram ismi bilan avto-to'ldirish
-        if (!initial?.isDriverRegistered) {
-          const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+        
+        const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+        const phoneOrUser = user.username ? `@${user.username}` : '';
+
+        // Agar haydovchi bo'lsa va hali ro'yxatdan o'tmagan bo'lsa
+        if (roleRef.current === 'driver' && !isDriverRegisteredRef.current) {
           setDriverData(prev => ({
             ...prev,
             fullName: fullName || prev.fullName,
-            phone: user.username ? `@${user.username}` : prev.phone,
+            phone: phoneOrUser || prev.phone,
           }));
         }
+
+        // Mijoz buyurtmasi uchun kontaktlarni to'ldirish
+        setClientOrder(prev => ({
+          ...prev,
+          telegram: user.username || prev.telegram,
+          id_telegram: user.id || prev.id_telegram,
+        }));
       }
       
       // Telegram mavzusiga moslashish
@@ -114,6 +131,7 @@ export function useTaxiAppState() {
         [data.id]: {
           pos: [data.lat, data.lng],
           role: data.role,
+          lastSeenAt: data.lastSeenAt || new Date().toISOString(),
           order: data.order !== undefined ? data.order : prev[data.id]?.order,
           driverService:
             data.driverService !== undefined ? data.driverService : prev[data.id]?.driverService,
@@ -135,6 +153,42 @@ export function useTaxiAppState() {
     };
   }, []);
 
+  // Telegram ID orqali haydovchini avtomatik yuklash
+  useEffect(() => {
+    if (!telegramUser || !telegramUser.id) return;
+    
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/drivers/telegram/${telegramUser.id}`);
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        
+        if (!cancelled) {
+          setIsDriverRegistered(true);
+          setDriverDbId(data.id);
+          setDriverData(prev => ({
+            ...prev,
+            fullName: data.fullName || prev.fullName,
+            phone: data.phone || prev.phone,
+            carModel: data.carModel || prev.carModel,
+            carNumber: data.carNumber || prev.carNumber,
+            licenseNumber: data.licenseNumber || prev.licenseNumber,
+            originPlace: data.originPlace || prev.originPlace,
+            avatarUrl: data.avatarUrl || prev.avatarUrl,
+            carPhotoUrl: data.carPhotoUrl || prev.carPhotoUrl,
+          }));
+          // Agar foydalanuvchi hali rol tanlamagan bo'lsa, avtomatik haydovchi qilib qo'yishimiz mumkin
+          // yoki shunchaki ma'lumotlarni yuklab qo'yamiz.
+        }
+      } catch (err) {
+        console.error('Fetch driver by TG error:', err);
+      }
+    })();
+    
+    return () => { cancelled = true; };
+  }, [telegramUser]);
+
   // Back button holatini yangilash
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
@@ -146,6 +200,89 @@ export function useTaxiAppState() {
       }
     }
   }, [profileOpen, clientOrderOpen, postRegNoticeOpen]);
+
+  // DB dagi aktiv buyurtmalarni vaqti-vaqti bilan olish (Ghost users)
+  useEffect(() => {
+    if (role !== 'driver' || !isDriverRegistered) return undefined;
+    
+    const fetchDbUsers = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/map/ride-requests`);
+        if (!res.ok) return;
+        const j = await res.json();
+        const users = {};
+        j.forEach(req => {
+          if (req.pickupLat && req.pickupLng) {
+            users[`db_${req.id}`] = {
+              pos: [req.pickupLat, req.pickupLng],
+              role: 'client',
+              lastSeenAt: req.lastSeenAt,
+              order: req,
+              isDbGhost: true,
+            };
+          }
+        });
+        setDbUsers(users);
+      } catch (err) {
+        console.error('Fetch DB users error:', err);
+      }
+    };
+
+    fetchDbUsers();
+    const id = setInterval(fetchDbUsers, 30000); // 30 soniyada yangilash
+    return () => clearInterval(id);
+  }, [role, isDriverRegistered]);
+
+  const handleSaveClientOrder = useCallback(async (order) => {
+    // 1. Avval natijani kutmasdan local state yangilash (UX uchun)
+    setClientOrder(order);
+    setClientOrderOpen(false);
+
+    // 2. Serverga buyurtmani saqlash (persistency uchun)
+    if (order.isActive !== false) {
+      try {
+        const [lat, lng] = locationRef.current;
+        const res = await fetch(`${API_BASE_URL}/api/ride-requests`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...order,
+            fromLabel: order.from,
+            toLabel: order.to,
+            pickupLat: lat,
+            pickupLng: lng
+          }),
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          // Id ni saqlab qo'yamiz (socket orqali yangilab turish uchun)
+          setClientOrder(prev => ({ ...prev, id: saved.id }));
+          
+          // 3. Socket orqali xabar yuborish
+          if (roleRef.current === 'client' && lat != null && lng != null) {
+            socket.emit('update_location', {
+              lat,
+              lng,
+              role: 'client',
+              rideRequestId: saved.id,
+              order: { 
+                ...order, 
+                id: saved.id,
+                from: order.from,
+                to: order.to,
+                price: order.price,
+                when: order.when,
+                phone: order.phone,
+                telegram: order.telegram
+              },
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Save order error:', err);
+      }
+    }
+  }, []);
 
   const startWatchPosition = useCallback(() => {
     if (!navigator.geolocation) return;
@@ -162,11 +299,26 @@ export function useTaxiAppState() {
         if (r && (r === 'client' || (r === 'driver' && idr))) {
           const payload = { lat, lng, role: r };
           if (r === 'client') {
-            payload.order = clientOrderRef.current;
+            const currentOrder = clientOrderRef.current;
+            if (currentOrder.isActive !== false) {
+              payload.order = {
+                ...currentOrder,
+                from: currentOrder.from,
+                to: currentOrder.to,
+                price: currentOrder.price,
+                when: currentOrder.when,
+                phone: currentOrder.phone,
+                telegram: currentOrder.telegram
+              };
+            } else {
+              payload.order = null;
+            }
+            if (currentOrder.id) payload.rideRequestId = currentOrder.id;
           }
           if (r === 'driver') {
             payload.driverService = packDriverService(driverDataRef.current);
             payload.acceptingClients = driverDataRef.current.acceptingClients !== false;
+            if (driverDbId) payload.driverId = driverDbId;
           }
           socket.emit('update_location', payload);
         }
@@ -174,7 +326,7 @@ export function useTaxiAppState() {
       (err) => console.error(err),
       { enableHighAccuracy: true },
     );
-  }, []);
+  }, [driverDbId]);
 
   useEffect(
     () => () => {
@@ -222,11 +374,12 @@ export function useTaxiAppState() {
       lat,
       lng,
       role: 'driver',
+      driverId: driverDbId,
       driverService: packDriverService(driverServiceSlice),
       acceptingClients: driverData.acceptingClients !== false,
     });
     return undefined;
-  }, [role, isDriverRegistered, location, driverServiceSlice, driverData.acceptingClients]);
+  }, [role, isDriverRegistered, location, driverServiceSlice, driverData.acceptingClients, driverDbId]);
 
   useEffect(() => {
     savePersistedState({
@@ -306,10 +459,13 @@ export function useTaxiAppState() {
   }, []);
 
   const toggleDriverAccepting = useCallback(() => {
-    setDriverData((prev) => ({
-      ...prev,
-      acceptingClients: prev.acceptingClients === false ? true : false,
-    }));
+    setDriverData((prev) => {
+      const nextVal = prev.acceptingClients === false;
+      if (nextVal === true) {
+        setDriverActiveNoticeOpen(true);
+      }
+      return { ...prev, acceptingClients: nextVal };
+    });
   }, []);
 
   const selectRole = useCallback((selectedRole) => {
@@ -317,6 +473,16 @@ export function useTaxiAppState() {
     if (selectedRole === 'client') {
       socket.emit('set_role', 'client');
     }
+  }, []);
+
+  const toggleClientOrderActive = useCallback(() => {
+    setClientOrder((prev) => {
+      const nextActive = prev.isActive === false ? true : false;
+      if (nextActive === true) {
+        setClientActiveNoticeOpen(true);
+      }
+      return { ...prev, isActive: nextActive };
+    });
   }, []);
 
   const handleDriverRegSubmit = useCallback(async (e) => {
@@ -332,7 +498,11 @@ export function useTaxiAppState() {
       const res = await fetch(`${API_BASE_URL}/api/drivers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(driverData),
+        body: JSON.stringify({ 
+          ...driverData, 
+          inviteCode: startParam,
+          idTelegram: telegramUser?.id 
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -346,23 +516,14 @@ export function useTaxiAppState() {
       const msg =
         err?.message ||
         (err?.name === 'TypeError' && String(err?.message || '').includes('fetch')
-          ? 'Serverga ulanib bo'lmadi. Backend ishlayotganini va telefonda API manzilini tekshiring (bir Wi‑Fi, firewall).'
+          ? `Serverga ulanib bo'lmadi. Backend ishlayotganini va telefonda API manzilini tekshiring (bir Wi‑Fi, firewall).`
           : null) ||
-        'Ro'yxatdan o'tishda xatolik';
+        `Ro'yxatdan o'tishda xatolik`;
       alert(msg);
     }
-  }, [driverData]);
+  }, [driverData, startParam]);
 
   const closeProfile = useCallback(() => setProfileOpen(false), []);
-
-  const handleSaveClientOrder = useCallback((order) => {
-    setClientOrder(order);
-    setClientOrderOpen(false);
-    const [lat, lng] = locationRef.current;
-    if (roleRef.current === 'client' && lat != null && lng != null) {
-      socket.emit('update_location', { lat, lng, role: 'client', order });
-    }
-  }, []);
 
   const handleLogout = useCallback(() => {
     setProfileOpen(false);
@@ -382,15 +543,49 @@ export function useTaxiAppState() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/drivers/${driverDbId}`, { method: 'DELETE' });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || 'O'chirish muvaffaqiyatsiz');
+      if (!res.ok) throw new Error(data.message || `O'chirish muvaffaqiyatsiz`);
       handleLogout();
     } catch (err) {
       alert(err.message || 'Xatolik');
     }
   }, [driverDbId, handleLogout, t]);
 
-  const mergedMapUsers =
-    role === 'client' ? {} : { ...DEMO_CLIENT_MARKERS, ...otherUsers };
+  const mergedMapUsers = useMemo(() => {
+    if (role !== 'driver' || !isDriverRegistered) return {};
+    
+    const driverService = packDriverService(driverData);
+    const filtered = {};
+    
+    // 1. Haqiqiy online foydalanuvchilar (otherUsers)
+    Object.entries(otherUsers).forEach(([id, u]) => {
+      if (u.role === 'client' && isOrderMatchDriver(u.order, driverService)) {
+        filtered[id] = u;
+      }
+    });
+
+    // 2. DB dagi e'lonlar (Ghost users) - agar online bo'lmasa qo'shamiz
+    Object.entries(dbUsers).forEach(([id, u]) => {
+      // Online ro'yxatda bormi (id lari bir xil bo'lsa)
+      const isOnline = Object.values(otherUsers).some(onlineU => 
+        onlineU.role === 'client' && onlineU.order?.id === u.order?.id
+      );
+      if (!isOnline && isOrderMatchDriver(u.order, driverService)) {
+        filtered[id] = u;
+      }
+    });
+
+    // 3. Demo mijozlar
+    Object.entries(DEMO_CLIENT_MARKERS).forEach(([id, u]) => {
+      const isOnline = Object.values(otherUsers).some(onlineU => 
+        onlineU.role === 'client' && onlineU.order?.pickupLat === u.pos[0]
+      );
+      if (!isOnline && isOrderMatchDriver(u.order, driverService)) {
+        filtered[id] = u;
+      }
+    });
+
+    return filtered;
+  }, [role, isDriverRegistered, otherUsers, dbUsers, driverData]);
 
   const clientRouteReady = role === 'client' && isClientRouteDefined(clientOrder);
   const routeOffersForMap = useMemo(() => {
@@ -478,7 +673,12 @@ export function useTaxiAppState() {
     overlayAction,
     showMainChrome,
     setPostRegNoticeOpen,
+    clientActiveNoticeOpen,
+    setClientActiveNoticeOpen,
+    driverActiveNoticeOpen,
+    setDriverActiveNoticeOpen,
     toggleDriverAccepting,
+    toggleClientOrderActive,
     telegramUser,
     isTelegram,
   };

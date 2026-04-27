@@ -11,6 +11,9 @@ import ProfileButton from '../ProfileButton/ProfileButton';
 import ProfileScreen from '../ProfileScreen/ProfileScreen';
 import RoleModal from '../RoleModal/RoleModal';
 import StatusBadge from '../StatusBadge/StatusBadge';
+import ClientOrderCompact from '../ClientOrderCompact/ClientOrderCompact';
+import ClientActiveNotice from '../ClientActiveNotice/ClientActiveNotice';
+import DriverActiveNotice from '../DriverActiveNotice/DriverActiveNotice';
 import { packDriverService } from '../../orderRouteUtils';
 
 /**
@@ -26,6 +29,10 @@ export default function AppLayout({
   driverDbId,
   postRegNoticeOpen,
   setPostRegNoticeOpen,
+  clientActiveNoticeOpen,
+  setClientActiveNoticeOpen,
+  driverActiveNoticeOpen,
+  setDriverActiveNoticeOpen,
   driverData,
   setDriverData,
   clientOrder,
@@ -50,6 +57,9 @@ export default function AppLayout({
   overlayAction,
   showMainChrome,
   toggleDriverAccepting,
+  toggleClientOrderActive,
+  telegramUser,
+  isTelegram,
 }) {
   const { t } = useLocale();
 
@@ -71,6 +81,14 @@ export default function AppLayout({
       {postRegNoticeOpen && (
         <PostRegistrationModal onDismiss={() => setPostRegNoticeOpen(false)} />
       )}
+      
+      {clientActiveNoticeOpen && (
+        <ClientActiveNotice onDismiss={() => setClientActiveNoticeOpen(false)} />
+      )}
+
+      {driverActiveNoticeOpen && (
+        <DriverActiveNotice onDismiss={() => setDriverActiveNoticeOpen(false)} />
+      )}
 
       {clientOrderOpen && role === 'client' && (
         <ClientOrderModal
@@ -91,6 +109,7 @@ export default function AppLayout({
           role={role}
           driverData={driverData}
           driverDbId={driverDbId}
+          telegramUser={telegramUser}
           onClose={closeProfile}
           onLogout={handleLogout}
           onDeleteAccount={role === 'driver' && driverDbId != null ? handleDeleteAccount : null}
@@ -111,7 +130,7 @@ export default function AppLayout({
           role === 'driver' && isDriverRegistered ? packDriverService(driverData) : undefined
         }
         routeOffers={routeOffersForMap}
-        clientNeedsRoute={role === 'client' && !clientRouteReady}
+        clientNeedsRoute={false}
       />
 
       {showMainChrome && (
@@ -129,8 +148,23 @@ export default function AppLayout({
               />
             ) : null
           }
-          onEditOrder={role === 'client' ? () => setClientOrderOpen(true) : undefined}
+          clientSlot={
+            role === 'client' && clientRouteReady ? (
+              <ClientOrderCompact
+                isActive={clientOrder.isActive !== false}
+                onToggleActive={toggleClientOrderActive}
+              />
+            ) : null
+          }
+          onEditOrder={role === 'client' && clientRouteReady ? () => setClientOrderOpen(true) : undefined}
           editOrderLabel={t('bottom.editOrder')}
+          onPrimaryAction={
+            role === 'driver'
+              ? undefined
+              : !clientRouteReady
+              ? () => setClientOrderOpen(true)
+              : undefined
+          }
         />
       )}
     </>

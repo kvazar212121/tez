@@ -9,19 +9,32 @@ import './MapSection.css';
 
 const markerBase = `${import.meta.env.BASE_URL || '/'}`.replace(/\/?$/, '/');
 
-const taxiIcon = L.icon({
-  iconUrl: `${markerBase}markers/taxi.svg`,
+const taxiIcon = L.divIcon({
+  html: `
+    <div class="taxi-marker-wrap">
+      <div class="taxi-marker-star">⭐</div>
+      <img src="${markerBase}markers/taxi.svg" class="taxi-marker-svg" />
+    </div>
+  `,
   iconSize: [48, 48],
   iconAnchor: [24, 40],
   popupAnchor: [0, -36],
+  className: 'taxi-marker-div-icon'
 });
 
 /** Mijozlar: kichik odamcha qo‘lni silkitayotgan */
-const clientIcon = L.icon({
-  iconUrl: `${markerBase}markers/person.svg`,
+const clientIcon = L.divIcon({
+  html: `
+    <div class="client-marker-wrap">
+      <div class="client-marker-hand">👋</div>
+      <img src="${markerBase}markers/person.svg" class="client-marker-svg" />
+      <div class="client-marker-glow"></div>
+    </div>
+  `,
   iconSize: [48, 48],
   iconAnchor: [24, 40],
   popupAnchor: [0, -36],
+  className: 'client-marker-div-icon'
 });
 
 L.Marker.prototype.options.icon = clientIcon;
@@ -112,13 +125,14 @@ export default function MapSection({
           <Marker position={location} icon={userIcon}>
             <Popup>
               {role === 'client' && myClientOrder ? (
-                <OrderPopupContent id="siz" label={t('map.popup.youClient')} role="client" order={myClientOrder} />
+                <OrderPopupContent id="siz" label={t('map.popup.youClient')} role="client" order={myClientOrder} pos={location} />
               ) : role === 'driver' && isDriverRegistered && myDriverService ? (
                 <OrderPopupContent
                   id="siz"
                   label={t('map.popup.youDriver')}
                   role="driver"
                   driverService={myDriverService}
+                  pos={location}
                 />
               ) : (
                 <>{role === 'driver' ? t('map.youLineDriver') : t('map.youLineClient')}</>
@@ -126,19 +140,34 @@ export default function MapSection({
             </Popup>
           </Marker>
         )}
-        {Object.entries(otherUsers).map(([id, data]) => (
-          <Marker key={id} position={data.pos} icon={data.role === 'driver' ? taxiIcon : clientIcon}>
-            <Popup>
-              <OrderPopupContent
-                id={id}
-                label={data.label}
-                role={data.role}
-                order={data.order}
-                driverService={data.driverService}
-              />
-            </Popup>
-          </Marker>
-        ))}
+        {Object.entries(otherUsers).map(([id, data]) => {
+          const isOffline = data.lastSeenAt && (new Date() - new Date(data.lastSeenAt)) > 60000;
+          return (
+            <Marker 
+              key={id} 
+              position={data.pos} 
+              icon={data.role === 'driver' ? taxiIcon : clientIcon}
+              opacity={isOffline ? 0.6 : 1}
+              eventHandlers={{
+                click: (e) => {
+                  e.target._map.panTo(e.target.getLatLng());
+                },
+              }}
+            >
+              <Popup autoPanPadding={[50, 50]}>
+                <OrderPopupContent
+                  id={id}
+                  label={data.label}
+                  role={data.role}
+                  order={data.order}
+                  driverService={data.driverService}
+                  pos={data.pos}
+                  lastSeenAt={data.lastSeenAt}
+                />
+              </Popup>
+            </Marker>
+          );
+        })}
         {routeOffers.map((offer) => (
           <Marker key={offer.id} position={offer.pos} icon={taxiIcon}>
             <Popup>

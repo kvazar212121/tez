@@ -1,0 +1,70 @@
+.client-order-compact {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.client-order-compact__activity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.client-order-compact__activity-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.client-order-compact__switch-wrap {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.client-order-compact__switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.client-order-compact__switch-ui {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #334155;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 24px;
+}
+
+.client-order-compact__switch-ui::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #f8fafc;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.client-order-compact__switch-input:checked + .client-order-compact__switch-ui {
+  background-color: #10b981;
+}
+
+.client-order-compact__switch-input:checked + .client-order-compact__switch-ui::before {
+  transform: translateX(20px);
+}
+
+.client-order-compact__activity:hover .client-order-compact__activity-text {
+    color: #e2e8f0;
+}

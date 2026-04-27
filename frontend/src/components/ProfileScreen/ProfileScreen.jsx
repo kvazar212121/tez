@@ -20,6 +20,7 @@ export default function ProfileScreen({
   onLogout,
   onDeleteAccount,
   onDriverProfileSync,
+  telegramUser,
 }) {
   const { t } = useLocale();
   const isDriver = role === 'driver';
@@ -90,10 +91,10 @@ export default function ProfileScreen({
   return (
     <div className="profile-screen">
       <div className="profile-screen__header">
-        <button type="button" className="profile-screen__back" onClick={onClose} aria-label={t('profile.close')}>
-          <ChevronLeft strokeWidth={2.25} size={26} aria-hidden />
-        </button>
         <h2 className="profile-screen__title">{t('profile.title')}</h2>
+        <button type="button" className="profile-screen__close-btn" onClick={onClose} aria-label="Back">
+          <ChevronLeft size={24} />
+        </button>
       </div>
 
       <div className="profile-screen__scroll">
@@ -191,10 +192,51 @@ export default function ProfileScreen({
           </form>
         </>
       ) : (
-        <div className="profile-screen__row">
-          <div className="profile-screen__label">{t('profile.state')}</div>
-          <div className="profile-screen__value">{t('profile.clientHint')}</div>
-        </div>
+        <>
+          <div className="profile-screen__row">
+            <div className="profile-screen__label">{t('profile.name')}</div>
+            <div className="profile-screen__value">
+              {telegramUser 
+                ? `${telegramUser.first_name || ''} ${telegramUser.last_name || ''}`.trim() || t('profile.client')
+                : t('profile.client')}
+            </div>
+          </div>
+          {telegramUser?.username && (
+            <div className="profile-screen__row">
+              <div className="profile-screen__label">Username</div>
+              <div className="profile-screen__value">@{telegramUser.username}</div>
+            </div>
+          )}
+          <div className="profile-screen__row">
+            <div className="profile-screen__label">{t('profile.state')}</div>
+            <div className="profile-screen__value">{t('profile.clientHint')}</div>
+          </div>
+          
+          <div className="profile-screen__moderator-invite">
+            <h3 className="profile-screen__moderator-title">Moderator boʻlishni xohlaysizmi?</h3>
+            <p className="profile-screen__moderator-text">
+              Siz taksislarni platformaga taklif qilish orqali daromad qilishingiz mumkin. 
+              Taksislar sizning havolangiz orqali qoʻshilsa, siz ularga oylik toʻlov xizmatini 
+              taklif qilib, moderatorlikni boshlashingiz mumkin.
+            </p>
+            <div className="profile-screen__moderator-link-box">
+              https://t.me/yurtaxi_bot
+            </div>
+            <button 
+              type="button" 
+              className="profile-screen__moderator-btn"
+              onClick={() => window.open('https://t.me/gvazar', '_blank')}
+            >
+              Moderatorlik uchun soʻrov yuborish
+            </button>
+          </div>
+          
+          <div className="profile-screen__mt-auto">
+            <ButtonPrimary onClick={onClose}>
+               {t('profile.backToHome')}
+            </ButtonPrimary>
+          </div>
+        </>
       )}
       </div>
 

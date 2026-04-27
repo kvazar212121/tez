@@ -11,6 +11,7 @@ export const STRINGS = {
     'status.online': 'Tizimga ulangan',
     'status.connecting': 'Ulanmoqda…',
     'status.offline': 'Aloqa yoʻq',
+    'status.minsAgo': '{n} min oldin',
 
     'permission.title': 'Geolokatsiya zarur',
     'permission.text':
@@ -38,12 +39,12 @@ export const STRINGS = {
 
     'postReg.title': 'Profilni to‘ldiring',
     'postReg.text':
-      'Ro‘yxatdan muvaffaqiyatli o‘tdingiz. Endi o‘z rasmingiz, mashina rasmi va qayerdan ekanligingizni profilda ko‘rsating. Bu ma’lumotlarni to‘ldirsangiz, yo‘lovchilar sizni ishonchliroq deb qabul qiladi va buyurtma berishga tayyor bo‘ladi.',
+      'Ro‘yxatdan muvaffaqiyatli o‘tdingiz. Endi o‘z rasmingiz, mashina rasmi va qayerdan ekanligingizni profilda ko‘rsating.',
     'postReg.ok': 'Tushundim',
 
-    'map.hintTitle': 'Yo‘nalishni aniqlang',
+    'map.hintTitle': 'YO‘NALISHINI ANIQLAB OLING',
     'map.hintText':
-      'Qayerdan va qayerga ekanligingizni buyurtmada belgilang. Keyin mos mashinalar chiqadi. Boshqa yo‘lovchilar xaritada ko‘rinmaydi.',
+      'Qayerdan va qayerga ekanligingizni buyurtmada belgilang.',
     'map.popup.youClient': 'Siz (mijoz)',
     'map.popup.youDriver': 'Siz (haydovchi)',
     'map.popup.youRoleDriver': 'Haydovchi',
@@ -52,19 +53,19 @@ export const STRINGS = {
     'map.youLineClient': 'Siz (Mijoz)',
     'map.locate': 'Mening joyimga',
 
-    'bottom.editOrder': 'Buyurtma ma’lumotlari',
+    'bottom.editOrder': 'Yo‘nalishni belgilash',
 
     'overlay.driver.waitTitle': 'Yangi buyurtmalar kutilmoqda...',
     'overlay.driver.offTitle': 'Faoliyat o‘chirilgan',
-    'overlay.client.routeTitle': 'Yo‘nalishni aniqlang',
+    'overlay.client.routeTitle': 'YO‘NALISHINI ANIQLAB OLING',
     'overlay.client.taxisTitle': 'Mavjud taksi',
     'overlay.defaultTitle': 'Qayerga boramiz?',
     'overlay.driver.waitSub': 'Atrofingizda faol mijozlar qidirilmoqda (xaritada {demoCount} ta demo mijoz)',
     'overlay.driver.offSub': 'Mijozlar sizni xaritada ko‘rmaydi. Yo‘nalishni pastda ham sozlashingiz mumkin.',
     'overlay.client.routeSub':
-      'Qayerdan va qayerga ekanligingizni buyurtmada belgilang — xaritada mos mashinalar chiqadi. Boshqa yo‘lovchilar ko‘rinmaydi.',
+      'Qayerdan va qayerga ekanligingizni buyurtmada belgilang.',
     'overlay.client.noTaxis':
-      'Bu yo‘nalishda hozircha mos taksi topilmadi. Vaqt yoki yo‘nalishni o‘zgartirib ko‘ring.',
+      'Taksislar sizga telefon qilishlari yoki Telegramdan yozishlari mumkin. Kuting yoki xaritadan taksislarni o‘zlariga telefon qilib ko‘ring.',
     'overlay.client.taxisSub': '{count} ta mos taksi — markerda vaqt va bo‘sh o‘rindiqlar.',
     'overlay.client.defaultSub': 'Atrofingizda {taxiCount} ta boʻsh taksi bor',
     'overlay.action.driverOff': 'Faoliyatni o‘chirish',
@@ -92,7 +93,10 @@ export const STRINGS = {
     'routeOffer.free': 'Bo‘sh taksi',
     'routeOffer.driverNote': 'Haydovchi eslatmasi',
     'routeOffer.seats': "Bo‘sh o‘rindiq: {free} / {total}",
-    'routeOffer.note': 'Boshqa yo‘lovchilar ko‘rsatilmaydi.',
+    'orderPopup.note': '',
+    'orderPopup.getDirections': 'Yo‘nalish olish',
+    'orderPopup.googleMaps': 'Google Maps',
+    'orderPopup.yandexMaps': 'Yandex Maps',
 
     'profile.close': 'Yopish',
     'profile.title': 'Profil',
@@ -114,8 +118,9 @@ export const STRINGS = {
     'profile.saving': 'Saqlanmoqda…',
     'profile.save': 'Saqlash',
     'profile.clientHint':
-      'Yo‘nalishni asosiy ekrandagi buyurtmada belgilang — xaritada faqat shu yo‘nalishga mos mashinalar chiqadi (ketish vaqti va bo‘sh o‘rindiqlar). Boshqa yo‘lovchilar ko‘rinmaydi.',
+      'Yo‘nalishni asosiy ekrandagi buyurtmada belgilang.',
     'profile.state': 'Holat',
+    'profile.backToHome': 'Asosiy ekranga qaytish',
     'profile.logout': 'Accountdan chiqish',
     'profile.delete': 'Accountni o‘chirish',
     'profile.saveFailed': 'Saqlanmadi',
@@ -206,6 +211,7 @@ export const STRINGS = {
     'status.online': 'Подключено',
     'status.connecting': 'Подключение…',
     'status.offline': 'Нет связи',
+    'status.minsAgo': '{n} мин. назад',
 
     'permission.title': 'Нужна геолокация',
     'permission.text':
@@ -236,9 +242,9 @@ export const STRINGS = {
       'Регистрация прошла успешно. Добавьте в профиле своё фото, фото авто и откуда вы. Это повышает доверие пассажиров.',
     'postReg.ok': 'Понятно',
 
-    'map.hintTitle': 'Укажите маршрут',
+    'map.hintTitle': 'ОПРЕДЕЛИТЕ МАРШРУТ',
     'map.hintText':
-      'Укажите откуда и куда едете в заказе. Появятся подходящие машины. Другие пассажиры на карте не показываются.',
+      'Укажите откуда и куда едете в заказе. Появятся подходящие машины.',
     'map.popup.youClient': 'Вы (пассажир)',
     'map.popup.youDriver': 'Вы (водитель)',
     'map.popup.youRoleDriver': 'Водитель',
@@ -247,19 +253,19 @@ export const STRINGS = {
     'map.youLineClient': 'Вы (пассажир)',
     'map.locate': 'К моей позиции',
 
-    'bottom.editOrder': 'Данные заказа',
+    'bottom.editOrder': 'Указать маршрут',
 
     'overlay.driver.waitTitle': 'Ожидаем новые заказы…',
     'overlay.driver.offTitle': 'Активность выключена',
-    'overlay.client.routeTitle': 'Укажите направление',
+    'overlay.client.routeTitle': 'ОПРЕДЕЛИТЕ МАРШРУТ',
     'overlay.client.taxisTitle': 'Доступные такси',
     'overlay.defaultTitle': 'Куда поедем?',
     'overlay.driver.waitSub': 'Ищем активных пассажиров рядом (на карте {demoCount} демо-пассажиров)',
     'overlay.driver.offSub': 'Пассажиры не видят вас на карте. Маршрут можно настроить ниже.',
     'overlay.client.routeSub':
-      'Укажите откуда и куда в заказе — на карте появятся подходящие машины. Другие пассажиры не отображаются.',
+      'Укажите откуда и куда в заказе — на карте появятся подходящие машины.',
     'overlay.client.noTaxis':
-      'По этому направлению пока нет такси. Попробуйте другое время или маршрут.',
+      'Таксисты могут позвонить вам или написать в Telegram. Ожидайте или попробуйте позвонить им сами через карту.',
     'overlay.client.taxisSub': '{count} подходящих такси — время и свободные места на маркере.',
     'overlay.client.defaultSub': 'Рядом {taxiCount} свободных такси',
     'overlay.action.driverOff': 'Выключить активность',
@@ -287,7 +293,10 @@ export const STRINGS = {
     'routeOffer.free': 'Свободное такси',
     'routeOffer.driverNote': 'Заметка водителя',
     'routeOffer.seats': 'Свободно мест: {free} / {total}',
-    'routeOffer.note': 'Другие пассажиры не показываются.',
+    'orderPopup.note': '',
+    'orderPopup.getDirections': 'Проложить маршрут',
+    'orderPopup.googleMaps': 'Google Карты',
+    'orderPopup.yandexMaps': 'Яндекс Карты',
 
     'profile.close': 'Закрыть',
     'profile.title': 'Профиль',
@@ -309,8 +318,9 @@ export const STRINGS = {
     'profile.saving': 'Сохранение…',
     'profile.save': 'Сохранить',
     'profile.clientHint':
-      'Маршрут укажите в заказе на главном экране — на карте только подходящие машины (время и свободные места). Другие пассажиры скрыты.',
+      'Маршрут укажите в заказе на главном экране — на карте только подходящие машины (время и свободные места).',
     'profile.state': 'Статус',
+    'profile.backToHome': 'Вернуться на главный экран',
     'profile.logout': 'Выйти из аккаунта',
     'profile.delete': 'Удалить аккаунт',
     'profile.saveFailed': 'Не сохранено',

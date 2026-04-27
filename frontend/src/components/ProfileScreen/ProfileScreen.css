@@ -19,6 +19,66 @@
   box-sizing: border-box;
 }
 
+.profile-screen__mt-auto {
+  margin-top: auto;
+  padding: 16px 0;
+}
+
+.profile-screen__moderator-invite {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(145deg, rgba(251, 191, 36, 0.08), rgba(217, 119, 6, 0.05));
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 20px;
+  text-align: center;
+}
+
+.profile-screen__moderator-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #f59e0b;
+  margin: 0 0 10px;
+}
+
+.profile-screen__moderator-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #475569;
+  margin: 0 0 16px;
+}
+
+.profile-screen__moderator-link-box {
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #64748b;
+  border: 1px dashed #cbd5e1;
+  margin-bottom: 16px;
+  user-select: all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-screen__moderator-btn {
+  width: 100%;
+  padding: 12px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.profile-screen__moderator-btn:active {
+  transform: scale(0.98);
+  background: #d97706;
+}
+
 .profile-screen__scroll {
   flex: 1;
   min-height: 0;
@@ -30,41 +90,37 @@
 .profile-screen__header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #f0f0f0;
-  flex-shrink: 0;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 24px;
 }
 
-.profile-screen__back {
-  flex-shrink: 0;
+.profile-screen__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.profile-screen__close-btn {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: none;
   width: 44px;
   height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  background: #f1f5f9;
   border-radius: 12px;
-  color: #0f172a;
-  padding: 0;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s ease;
+  transition: all 0.2s;
+  padding: 0;
 }
 
-.profile-screen__back:hover {
+.profile-screen__close-btn:active {
   background: #e2e8f0;
-}
-
-.profile-screen__title {
-  margin: 0;
-  font-size: clamp(17px, 4.2vw, 20px);
-  font-weight: 800;
-  line-height: 1.25;
-  min-width: 0;
-  flex: 1;
+  transform: scale(0.95);
 }
 
 .profile-screen__badge {

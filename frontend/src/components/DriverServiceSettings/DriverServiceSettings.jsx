@@ -275,17 +275,17 @@ export default function DriverServiceSettings({
           <>
             <button
               type="button"
-              className={`driver-service__pill ${mode === 'city' ? 'driver-service__pill--on' : ''}`}
-              onClick={() => handleModeChange('city')}
-            >
-              {t('driverService.cityPill')}
-            </button>
-            <button
-              type="button"
               className={`driver-service__pill ${mode === 'interregional' ? 'driver-service__pill--on' : ''}`}
               onClick={() => handleModeChange('interregional')}
             >
               {t('driverService.irPill')}
+            </button>
+            <button
+              type="button"
+              className={`driver-service__pill ${mode === 'city' ? 'driver-service__pill--on' : ''}`}
+              onClick={() => handleModeChange('city')}
+            >
+              {t('driverService.cityPill')}
             </button>
           </>
         ) : (
@@ -294,19 +294,19 @@ export default function DriverServiceSettings({
               <input
                 type="radio"
                 name="driverServiceMode"
-                checked={mode === 'city'}
-                onChange={() => handleModeChange('city')}
+                checked={mode === 'interregional'}
+                onChange={() => handleModeChange('interregional')}
               />
-              <span>{t('driverService.cityRadio')}</span>
+              <span>{t('driverService.irRadio')}</span>
             </label>
             <label className="driver-service__kind-option">
               <input
                 type="radio"
                 name="driverServiceMode"
-                checked={mode === 'interregional'}
-                onChange={() => handleModeChange('interregional')}
+                checked={mode === 'city'}
+                onChange={() => handleModeChange('city')}
               />
-              <span>{t('driverService.irRadio')}</span>
+              <span>{t('driverService.cityRadio')}</span>
             </label>
           </>
         )}

@@ -57,6 +57,39 @@ function offerMatchesLocal(order, offer) {
 }
 
 /** Yo‘nalishga mos demo takliflar (yo‘lovchilar yo‘q) */
+export function isOrderMatchDriver(order, driverService) {
+  if (!order || !driverService) return false;
+  
+  // 1. Agar haydovchi 'city' (mahalliy) bo'lsa, faqat 'local' buyurtmalarni ko'radi
+  if (driverService.serviceMode === 'city') {
+    return order.orderKind === 'local';
+  }
+
+  // 2. Agar haydovchi 'interregional' bo'lsa
+  if (driverService.serviceMode === 'interregional') {
+    if (order.orderKind !== 'interregional') return false;
+
+    // Viloyatlararo moslik: Qayerdan (Region + District) va Qayerga (Region) mos kelishi shart.
+    // ToDistrictId ixtiyoriy (NULL bo'lsa hamma tumanlar tushadi).
+    const matchesFrom = 
+      Number(order.fromRegionId) === Number(driverService.fromRegionId) &&
+      Number(order.fromDistrictId) === Number(driverService.fromDistrictId);
+    
+    const matchesToRegion = Number(order.toRegionId) === Number(driverService.toRegionId);
+    
+    // Agar haydovchi aniq tuman tanlagan bo'lsa (toDistrictId), u holda buyurtma ham osha tumanga yoki markazga bo'lishi kerak
+    let matchesToDistrict = true;
+    if (driverService.toDistrictId) {
+      matchesToDistrict = 
+        !order.toDistrictId || Number(order.toDistrictId) === Number(driverService.toDistrictId);
+    }
+
+    return matchesFrom && matchesToRegion && matchesToDistrict;
+  }
+
+  return false;
+}
+
 export function filterRouteOffersForOrder(order, offers) {
   if (!isClientRouteDefined(order) || !Array.isArray(offers)) return [];
   if (order.orderKind === 'interregional') {

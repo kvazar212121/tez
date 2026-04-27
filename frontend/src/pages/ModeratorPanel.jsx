@@ -297,6 +297,7 @@ export default function ModeratorPanel() {
 
   const TABS = [
     { id: 'stats', label: '📊 Bosh sahifa' },
+    { id: 'links', label: '🔗 Havolalar' },
     { id: 'new', label: `🆕 Yangilar (${driverStats.newcomers})` },
     { id: 'drivers', label: '🚗 Haydovchilar' },
     { id: 'complaints', label: '📋 E\'tirozlar' },
@@ -401,6 +402,53 @@ export default function ModeratorPanel() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── LINKS TAB ── */}
+        {tab === 'links' && !sectionLoading && (
+          <div style={{ animation: 'fadeIn 0.3s ease' }}>
+            <h2 style={sectionTitle}>Taklif havolalari</h2>
+            <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))' }}>
+              {(!user.groups || user.groups.length === 0) && (
+                <div style={{ background: '#1e293b', padding: 32, borderRadius: 16, textAlign: 'center', color: '#94a3b8' }}>
+                  Sizga hali guruh biriktirilmagan.
+                </div>
+              )}
+              {(user.groups || []).map(g => (
+                <div key={g.id} style={statCard}>
+                  <div style={{ fontWeight: 800, color: '#fbbf24', fontSize: 18, marginBottom: 8 }}>{g.name}</div>
+                  <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16 }}>
+                    Ushbu havola orqali roʻyxatdan oʻtgan haydovchilar avtomatik ravishda shu guruhga qoʻshiladi.
+                  </div>
+                  <div style={{ ...inp, padding: '10px 12px', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 12, background: '#0f172a' }}>
+                    {g.inviteLink || 'Havola mavjud emas'}
+                  </div>
+                  {g.inviteLink && (
+                    <button
+                      type="button"
+                      style={{ ...btnPrimary, width: '100%' }}
+                      onClick={() => {
+                        navigator.clipboard.writeText(g.inviteLink);
+                        alert('Nusxa olindi!');
+                      }}
+                    >
+                      Nusxa olish
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div style={{ marginTop: 24, padding: 16, background: 'rgba(56,189,248,0.1)', border: '1px solid #38bdf840', borderRadius: 12 }}>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <div style={{ fontSize: 24 }}>💡</div>
+                <div style={{ fontSize: 14, color: '#7dd3fc', lineHeight: 1.5 }}>
+                  <strong>Global haydovchilar:</strong> Agar haydovchi hech qanday taklif havolasisiz (oddiy bot orqali) 
+                  roʻyxatdan oʻtsa, u hech qaysi moderatorga biriktirilmaydi va faqat Super Admin boshqaruvida boʻladi.
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

@@ -50,7 +50,8 @@ async function initSchema() {
       car_model TEXT NOT NULL DEFAULT '',
       car_number TEXT NOT NULL DEFAULT '',
       license_number TEXT DEFAULT '',
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      id_telegram BIGINT UNIQUE
     );
   `;
   const createRegions = `
@@ -82,6 +83,8 @@ async function initSchema() {
       id SERIAL PRIMARY KEY,
       order_kind TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'open',
+      phone TEXT,
+      telegram TEXT,
       from_place TEXT,
       to_place TEXT,
       pickup_lat DOUBLE PRECISION,
@@ -92,9 +95,12 @@ async function initSchema() {
       to_district_id INT REFERENCES districts(id),
       from_label TEXT,
       to_label TEXT,
+      price TEXT,
+      "when" TEXT,
       passenger_count INT NOT NULL DEFAULT 1,
       passenger_notes TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      id_telegram BIGINT,
       CONSTRAINT ride_requests_kind_chk CHECK (order_kind IN ('local', 'interregional')),
       CONSTRAINT ride_requests_status_chk CHECK (status IN ('open', 'matched', 'cancelled')),
       CONSTRAINT ride_requests_inter_chk CHECK (
@@ -202,6 +208,12 @@ async function initSchema() {
     'ALTER TABLE drivers ADD COLUMN IF NOT EXISTS payment_months INT NOT NULL DEFAULT 1',
     'ALTER TABLE drivers ADD COLUMN IF NOT EXISTS payment_note TEXT',
     'ALTER TABLE drivers ADD COLUMN IF NOT EXISTS payment_set_at TIMESTAMPTZ',
+    'ALTER TABLE ride_requests ADD COLUMN IF NOT EXISTS phone TEXT',
+    'ALTER TABLE ride_requests ADD COLUMN IF NOT EXISTS telegram TEXT',
+    'ALTER TABLE ride_requests ADD COLUMN IF NOT EXISTS id_telegram BIGINT',
+    'ALTER TABLE ride_requests ADD COLUMN IF NOT EXISTS price TEXT',
+    'ALTER TABLE ride_requests ADD COLUMN IF NOT EXISTS "when" TEXT',
+    'ALTER TABLE drivers ADD COLUMN IF NOT EXISTS id_telegram BIGINT UNIQUE',
   ];
 
   const maxAttempts = 20;
@@ -235,7 +247,24 @@ async function initSchema() {
       await p.query(
         'ALTER TABLE drivers ADD COLUMN IF NOT EXISTS group_id INT REFERENCES moderator_groups(id) ON DELETE SET NULL',
       );
+      await p.query('ALTER TABLE moderator_groups ADD COLUMN IF NOT EXISTS invite_code TEXT UNIQUE');
+      await p.query('ALTER TABLE drivers ADD COLUMN IF NOT EXISTS signup_invite_code TEXT');
+
+      const { rows: groupsNoCode } = await p.query(
+        'SELECT id FROM moderator_groups WHERE invite_code IS NULL'
+      );
+      for (const g of groupsNoCode) {
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        try {
+          await p.query('UPDATE moderator_groups SET invite_code = $1 WHERE id = $2', [code, g.id]);
+        } catch (e) {
+          // ignore unique constraint for now, will retry on next run
+        }
+      }
+
       await p.query(createComplaints);
+      await p.query('ALTER TABLE ride_requests ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ DEFAULT NOW()');
+      await p.query('ALTER TABLE drivers ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ DEFAULT NOW()');
       console.log('\u2705 PostgreSQL: drivers, ride_requests, admin_users, moderator_groups, complaints tekshirildi.');
       return;
     } catch (err) {

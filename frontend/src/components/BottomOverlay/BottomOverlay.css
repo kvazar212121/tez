@@ -46,3 +46,16 @@
 .ui-overlay__order-btn:active {
   background: #f0f0f0;
 }
+
+.ui-overlay__side-by-side {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ui-overlay__side-by-side > div,
+.ui-overlay__side-by-side > button {
+  flex: 1;
+  margin: 0 !important;
+}

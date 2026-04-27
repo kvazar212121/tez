@@ -820,8 +820,25 @@ export default function AdminPanel() {
                     <span style={{ color: '#64748b', margin: '0 8px' }}>·</span>
                     Moderatorlar: <strong>{g.members?.length ?? 0}</strong>
                   </p>
+                  {g.inviteCode && (
+                    <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <code style={{ background: '#0f172a', padding: '4px 8px', borderRadius: 4, fontSize: 12, color: '#fbbf24' }}>
+                        {g.inviteCode}
+                      </code>
+                      <button
+                        type="button"
+                        style={{ ...btnSmall, padding: '4px 8px' }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://t.me/yurtaxi_bot?start=${g.inviteCode}`);
+                          alert('Havola nusxalandi!');
+                        }}
+                      >
+                        Havolani nusxalash
+                      </button>
+                    </div>
+                  )}
                   {g.description ? (
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: 13 }}>{g.description}</p>
+                    <p style={{ margin: '8px 0 0', color: '#94a3b8', fontSize: 13 }}>{g.description}</p>
                   ) : null}
                 </div>
                 {isSuper ? (

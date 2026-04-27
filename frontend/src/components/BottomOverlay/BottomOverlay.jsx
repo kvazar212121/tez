@@ -8,6 +8,7 @@ export default function BottomOverlay({
   onEditOrder,
   editOrderLabel,
   driverSlot,
+  clientSlot,
   onPrimaryAction,
 }) {
   return (
@@ -17,11 +18,14 @@ export default function BottomOverlay({
         <p className="ui-overlay__subtitle">{subtitle}</p>
       </div>
       {driverSlot}
-      {onEditOrder && (
-        <button type="button" className="ui-overlay__order-btn" onClick={onEditOrder}>
-          {editOrderLabel || 'Buyurtma ma’lumotlari'}
-        </button>
-      )}
+      <div className="ui-overlay__side-by-side">
+        {clientSlot}
+        {onEditOrder && (
+          <button type="button" className="ui-overlay__order-btn" onClick={onEditOrder}>
+            {editOrderLabel || 'Buyurtma ma’lumotlari'}
+          </button>
+        )}
+      </div>
       {typeof onPrimaryAction === 'function' && (
         <ButtonPrimary type="button" onClick={onPrimaryAction}>
           {actionLabel}

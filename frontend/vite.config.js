@@ -22,6 +22,7 @@ export default defineConfig({
   server: {
     /** Telefon / boshqa qurilmadan bir Wi‑Fi orqali kirish: http://<LAN-IP>:5173 */
     host: true,
+    allowedHosts: ['yurtaxi.uz', 'www.yurtaxi.uz'],
     fs: {
       allow: [path.resolve(__dirname, '..')],
     },

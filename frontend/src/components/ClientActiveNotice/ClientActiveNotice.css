@@ -1,0 +1,82 @@
+.client-active-notice-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.client-active-notice-modal {
+  background: white;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 320px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: notice-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes notice-in {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.client-active-notice__icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.client-active-notice__title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.client-active-notice__text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #475569;
+  margin-bottom: 20px;
+}
+
+.client-active-notice__text p {
+  margin: 8px 0;
+}
+
+.client-active-notice__actions {
+  margin-bottom: 16px;
+}
+
+.client-active-notice__footer {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.client-active-notice__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+  animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.2; transform: scale(0.8); }
+}

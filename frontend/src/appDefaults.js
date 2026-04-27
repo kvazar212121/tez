@@ -1,7 +1,7 @@
 /** Mijoz buyurtmasi va haydovchi boshlang‘ich ma’lumotlari */
 
 export const DEFAULT_CLIENT_ORDER = {
-  orderKind: 'local',
+  orderKind: 'interregional',
   from: 'Hozirgi joylashuv',
   to: '',
   when: 'Srochno',
@@ -20,6 +20,8 @@ export const DEFAULT_CLIENT_ORDER = {
   passengerCount: 1,
   /** Ixtiyoriy: shartlar, izoh («oldinga ketaman» va h.k.) */
   passengerNotes: '',
+  /** isActive: false bo‘lsa elon ko‘rinmaydi */
+  isActive: true,
 };
 
 export function buildInitialDriverData() {
@@ -35,7 +37,7 @@ export function buildInitialDriverData() {
     originPlace: '',
     avatarUrl: null,
     carPhotoUrl: null,
-    serviceMode: 'city',
+    serviceMode: 'interregional',
     serviceFromRegionId: null,
     serviceFromDistrictId: null,
     serviceToRegionId: null,

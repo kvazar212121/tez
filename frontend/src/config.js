@@ -16,7 +16,9 @@ function apiBaseUrl() {
     const { protocol, hostname } = window.location;
     const isLocalPage = hostname === 'localhost' || hostname === '127.0.0.1';
     if (!isLocalPage) {
-      return `${protocol}//${hostname}:${port}`;
+      // Production: Nginx /api va /socket.io yo'llarini proxy qiladi
+      // Port kerak emas — HTTPS (443) orqali o'tadi
+      return `${protocol}//${hostname}`;
     }
   }
 
